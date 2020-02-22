@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb-hhvm-062.ebi.ac.uk:27017,mongodb-hxvm-063.ebi.ac.uk:27017/admin?replicaSet=gwasdepodevrs039
+
+gwas-ingest-service:
+  db: gwasdepo
+  service-environments: prod, prod-fallback
+
+quartz:
+  scheduler:
+    dbName: gwasdepo

@@ -1,0 +1,63 @@
+# Default values for gwas-ingest-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ebispot/gwas-deposition-ingest
+  tag: latest
+  pullPolicy: Always
+  containerPort: 8080
+  logMountPath: "/var/log/gwas"
+  env:
+    envName: "sandbox"
+    logFileName: "ingest-service"
+    xms: "-Xms1024m"
+    xmx: "-Xms1024m"
+    dbUser: ""
+    secretsName: ""
+    secretsKey: ""
+    queueKey: ""
+  volume:
+    claimName: gwas-depo-logs
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  name: gwas-ingest-service
+  type: NodePort
+  port: 8080
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+  host: chart-example.local
+  path: "/ingest(/|$)(.*)"
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+k8Namespace: default
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 2048Mi
+  requests:
+    cpu: 100m
+    memory: 1024Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

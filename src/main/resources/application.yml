@@ -1,0 +1,27 @@
+server:
+  name: deposition-ingest-service
+  port: 80
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+
+gwas-ingest-service:
+  auto-curator-service-account: auto-curator-service@ebi.ac.uk
+  auth:
+    enabled: false
+  service-environments: dev
+
+quartz:
+  scheduler:
+    active: false
+
+spring:
+  profiles:
+    active: dev
+
+comms:
+  messaging:
+    enabled: false
