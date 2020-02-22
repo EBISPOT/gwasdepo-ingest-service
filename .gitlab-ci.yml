@@ -24,8 +24,7 @@ maven-build:
     - mvn -s settings.xml clean install -B -Dspring.profiles.active=test
   artifacts:
     paths:
-      - gdapp-backend-service/target/*.jar
-      - gdapp-ingest-service/target/*.jar
+      - target/*.jar
 
 build-ingest-container:
   stage: docker
