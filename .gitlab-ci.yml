@@ -39,7 +39,6 @@ build-ingest-release:
     GIT_STRATEGY: none
   stage: docker-release
   script:
-  - cd gdapp-backend-service
   - echo "$DOCKER_HUB_PASSWORD" > dhpw.txt
   - docker login -u "${DOCKER_HUB_USER}" --password-stdin < dhpw.txt
   - docker pull $INGEST_REGISTRY_IMAGE:$CI_COMMIT_SHA
