@@ -8,6 +8,8 @@ public class IngestServiceConstants {
 
     public static final String API_SUBMISSIONS = "/submissions";
 
+    public static final String API_MANUSCRIPTS = "/manuscripts";
+
     public static final String LOG_FILE_NAME = "LOG_FILE_NAME";
 
     public static final String HEADER_X_AUTH = "X-Auth";

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
@@ -29,6 +30,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     private PublicationRepository publicationRepository;
 
     @Autowired
+    private ManuscriptRepository manuscriptRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -46,10 +50,22 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     @Override
     public SubmissionDto assemble(Submission submission) {
         log.info("Assembling submission: {}", submission.getId());
-        Optional<Publication> publication = publicationRepository.findById(submission.getPublicationId());
-        if (!publication.isPresent()) {
-            log.error("Unable to find publication: {}", submission.getPublicationId());
-            throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+        Publication publication = null;
+        Manuscript manuscript = null;
+        if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
+            Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
+            if (!publicationOptional.isPresent()) {
+                log.error("Unable to find publication: {}", submission.getPublicationId());
+                throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+            }
+            publication = publicationOptional.get();
+        } else {
+            Optional<Manuscript> manuscriptOptional = manuscriptRepository.findById(submission.getManuscriptId());
+            if (!manuscriptOptional.isPresent()) {
+                log.error("Unable to find manuscript: {}", submission.getManuscriptId());
+                throw new EntityNotFoundException("Unable to find manuscript: " + submission.getManuscriptId());
+            }
+            manuscript = manuscriptOptional.get();
         }
 
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
@@ -79,7 +95,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         }
 
         return new SubmissionDto(submission.getId(),
-                PublicationDtoAssembler.assemble(publication.get()),
+                publication != null ? PublicationDtoAssembler.assemble(publication) : null,
+                manuscript != null ? ManuscriptDtoAssembler.assemble(manuscript) : null,
+                submission.getProvenanceType(),
                 submission.getOverallStatus(),
                 submission.getGlobusFolderId(),
                 submission.getGlobusOriginId(),
