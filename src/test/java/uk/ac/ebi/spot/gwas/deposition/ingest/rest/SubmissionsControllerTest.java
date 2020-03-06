@@ -7,10 +7,12 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.ManuscriptRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.PublicationRepository;
@@ -52,7 +54,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setDateSubmitted(LocalDate.now());
         submission = submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +100,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setDateSubmitted(LocalDate.now());
         submission = submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -128,7 +130,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setCompleted(true);
         submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS;
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS;
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -149,6 +151,37 @@ public class SubmissionsControllerTest extends IntegrationTest {
     }
 
     /**
+     * GET /v1/submission-envelopes
+     */
+    @Test
+    public void shouldGetSubmissionEnvelopes() throws Exception {
+        Publication publication = publicationRepository.insert(TestUtil.publication());
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
+        submission.setStudies(Arrays.asList(new String[]{study.getId()}));
+        submission.setNotes(Arrays.asList(new String[]{note.getId()}));
+        submission.setAssociations(Arrays.asList(new String[]{association.getId()}));
+        submission.setSamples(Arrays.asList(new String[]{sample.getId()}));
+        submission.setCompleted(true);
+        submissionRepository.insert(submission);
+
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSION_ENVELOPES;
+
+        String response = mockMvc.perform(get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<SubmissionEnvelopeDto> actual = mapper.readValue(response, new TypeReference<List<SubmissionEnvelopeDto>>() {
+        });
+
+        assertEquals(1, actual.size());
+        assertEquals(publication.getPmid(), actual.get(0).getPublication().getPmid());
+    }
+
+    /**
      * PUT /v1/submissions/{submissionId}
      */
     @Test
@@ -166,7 +199,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setDateSubmitted(LocalDate.now());
         submission = submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))

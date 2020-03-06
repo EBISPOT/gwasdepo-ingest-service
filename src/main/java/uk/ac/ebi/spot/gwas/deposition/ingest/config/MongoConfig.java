@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import uk.ac.ebi.spot.gwas.deposition.config.SystemConfigProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,12 @@ public class MongoConfig {
         @Autowired
         private SystemConfigProperties systemConfigProperties;
 
+        @Autowired
+        private IngestServiceConfig ingestServiceConfig;
+
         @Override
         protected String getDatabaseName() {
-            return systemConfigProperties.getDbName();
+            return ingestServiceConfig.getDbName();
         }
 
         @Bean
@@ -58,9 +62,12 @@ public class MongoConfig {
         @Autowired
         private SystemConfigProperties systemConfigProperties;
 
+        @Autowired
+        private IngestServiceConfig ingestServiceConfig;
+
         @Override
         protected String getDatabaseName() {
-            return systemConfigProperties.getDbName();
+            return ingestServiceConfig.getDbName();
         }
 
         @Bean
@@ -84,9 +91,12 @@ public class MongoConfig {
         @Autowired
         private SystemConfigProperties systemConfigProperties;
 
+        @Autowired
+        private IngestServiceConfig ingestServiceConfig;
+
         @Override
         protected String getDatabaseName() {
-            return systemConfigProperties.getDbName();
+            return ingestServiceConfig.getDbName();
         }
 
         @Bean

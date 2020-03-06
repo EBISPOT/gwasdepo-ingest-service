@@ -11,14 +11,13 @@ import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +45,56 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
 
     @Autowired
     private NoteRepository noteRepository;
+
+    @Override
+    public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
+        List<String> pubIds = new ArrayList<>();
+        List<String> manuscriptIds = new ArrayList<>();
+        Map<String, User> userMap = new HashMap<>();
+        for (Submission submission : submissions) {
+            if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
+                pubIds.add(submission.getPublicationId());
+            } else {
+                manuscriptIds.add(submission.getManuscriptId());
+            }
+            userMap.put(submission.getCreated().getUserId(), null);
+        }
+
+        List<Publication> publications = publicationRepository.findByIdIn(pubIds);
+        Map<String, Publication> publicationMap = new HashMap<>();
+        for (Publication publication : publications) {
+            publicationMap.put(publication.getId(), publication);
+        }
+        List<Manuscript> manuscripts = manuscriptRepository.findByIdInAndArchived(manuscriptIds, false);
+        Map<String, Manuscript> manuscriptMap = new HashMap<>();
+        for (Manuscript manuscript : manuscripts) {
+            manuscriptMap.put(manuscript.getId(), manuscript);
+        }
+        List<String> userIds = new ArrayList<>();
+        for (String id : userMap.keySet()) {
+            userIds.add(id);
+        }
+        List<User> users = userRepository.findByIdIn(userIds);
+        for (User user : users) {
+            userMap.put(user.getId(), user);
+        }
+
+        List<SubmissionEnvelopeDto> result = new ArrayList<>();
+        for (Submission submission : submissions) {
+            result.add(new SubmissionEnvelopeDto(
+                    submission.getId(),
+                    submission.getPublicationId() != null ? PublicationDtoAssembler.assemble(publicationMap.get(submission.getPublicationId())) : null,
+                    submission.getManuscriptId() != null ? ManuscriptDtoAssembler.assemble(manuscriptMap.get(submission.getManuscriptId())) : null,
+                    submission.getProvenanceType(),
+                    submission.getOverallStatus(),
+                    submission.getGlobusFolderId(),
+                    submission.getGlobusOriginId(),
+                    submission.getDateSubmitted(),
+                    ProvenanceDtoAssembler.assemble(submission.getCreated(), userMap.get(submission.getCreated().getUserId()))
+            ));
+        }
+        return result;
+    }
 
     @Override
     public SubmissionDto assemble(Submission submission) {

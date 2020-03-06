@@ -5,6 +5,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ebi.spot.gwas.deposition.config.SystemConfigProperties;
 
 @Configuration
 public class JettyConfig {

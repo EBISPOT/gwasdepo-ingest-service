@@ -14,6 +14,12 @@ gwas-ingest-service:
     enabled: false
   service-environments: dev
 
+audit:
+  enabled: false
+  url: http://gwas-audit-service:8080
+  endpoints:
+    audit-entries: /v1/audit-entries
+
 quartz:
   scheduler:
     active: false

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.SSTemplateEntryPlaceholder;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.ExtendedPublicationDto;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = IngestServiceConstants.API_V1 + IngestServiceConstants.API_PUBLICATIONS)
+@RequestMapping(value = GeneralCommon.API_V1 + IngestServiceConstants.API_PUBLICATIONS)
 public class PublicationsController {
 
     private static final Logger log = LoggerFactory.getLogger(PublicationsController.class);

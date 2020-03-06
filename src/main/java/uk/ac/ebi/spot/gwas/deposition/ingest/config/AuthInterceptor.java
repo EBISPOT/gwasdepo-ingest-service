@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.AuthToken;
-import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.AuthTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +31,9 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return true;
             }
 
-            String xAuthHeader = httpServletRequest.getHeader(IngestServiceConstants.HEADER_X_AUTH);
+            String xAuthHeader = httpServletRequest.getHeader(GeneralCommon.HEADER_X_AUTH);
             if (xAuthHeader == null) {
-                xAuthHeader = httpServletRequest.getHeader(IngestServiceConstants.HEADER_JWT);
+                xAuthHeader = httpServletRequest.getHeader(GeneralCommon.HEADER_JWT);
             }
             log.info("Received X-Auth header: {}", xAuthHeader);
             if (xAuthHeader != null) {

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.CorrespondingAuthor;
 import uk.ac.ebi.spot.gwas.deposition.domain.Manuscript;
 import uk.ac.ebi.spot.gwas.deposition.domain.Provenance;
@@ -50,7 +51,7 @@ public class ManuscriptControllerTest extends IntegrationTest {
      */
     @Test
     public void shouldGetManuscript() throws Exception {
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_MANUSCRIPTS + "/" + manuscript.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_MANUSCRIPTS + "/" + manuscript.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -69,7 +70,7 @@ public class ManuscriptControllerTest extends IntegrationTest {
      */
     @Test
     public void shouldGetManuscripts() throws Exception {
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_MANUSCRIPTS;
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_MANUSCRIPTS;
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
