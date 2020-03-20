@@ -105,7 +105,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="sandbox">
+    <springProfile name="gcp-sandbox">
         <property resource="logging-gcp-sandbox.properties"/>
 
         <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">

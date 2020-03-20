@@ -13,8 +13,8 @@ image:
   env:
     envName: "sandbox"
     logFileName: "ingest-service"
-    xms: "-Xms512m"
-    xmx: "-Xms512m"
+    xms: "-Xms256m"
+    xmx: "-Xms256m"
     dbUser: ""
     secretsName: ""
     secretsKey: ""
@@ -50,10 +50,10 @@ k8Namespace: default
 resources:
   limits:
     cpu: 200m
-    memory: 512Mi
+    memory: 256Mi
   requests:
     cpu: 100m
-    memory: 512Mi
+    memory: 256Mi
 
 nodeSelector: {}
 
