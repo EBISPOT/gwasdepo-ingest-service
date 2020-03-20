@@ -60,7 +60,7 @@ deploy-ingest-gcp-sandbox:
   - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
   - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/robot-k8-sandbox.json
   - export KUBECONFIG=/root/.kube/kubeconfig.yaml
-  - tail -f /root/.kube/nginx-reverse-proxy-deployment.yaml
+  - cat /root/.kube/nginx-reverse-proxy-deployment.yaml
   - kubectl get pods
   - kubectl delete -f /root/.kube/nginx-reverse-proxy-deployment.yaml
   - helm init
