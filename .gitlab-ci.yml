@@ -55,13 +55,16 @@ deploy-ingest-gcp-sandbox:
   script:
   - echo "Deploy to GCP sandbox server"
   - mkdir -p /root/.kube
+  - echo ${NGNIX_CONF} | base64 -d > nginx-reverse-proxy-deployment.yaml
   - echo ${GCP_KUBECONF} | base64 -d > /root/.kube/kubeconfig.yaml
   - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
   - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/robot-k8-sandbox.json
   - export KUBECONFIG=/root/.kube/kubeconfig.yaml
+  - kubectl delete -f nginx-reverse-proxy-deployment.yaml
   - helm init
   - helm delete --purge gwas-ingest-service || true
   - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.env.envName=gcp-sandbox,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.dbUser=gwasdepo,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
+  - kubectl create -f nginx-reverse-proxy-deployment.yaml
   environment:
     name: sandbox
   only:
