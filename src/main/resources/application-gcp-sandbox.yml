@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: deposition-sandbox-x7yjx.gcp.mongodb.net/test?retryWrites=true&w=majority
+
+gwas-ingest-service:
+  db: deposition-backend-sandbox
+  service-environments: sandbox
+
+quartz:
+  scheduler:
+    dbName: deposition-backend-sandbox

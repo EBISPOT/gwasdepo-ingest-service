@@ -6,7 +6,7 @@ stages:
   - build
   - docker
   - docker-release
-  - deploy-sandbox
+  - deploy-gcp-sandbox
   - deploy-fallback
   - deploy-live
 
@@ -48,6 +48,24 @@ build-ingest-release:
   - docker push $INGEST_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
   - tags
+
+deploy-ingest-gcp-sandbox:
+  image: dtzar/helm-kubectl:2.13.1
+  stage: deploy-gcp-sandbox
+  script:
+  - echo "Deploy to GCP sandbox server"
+  - mkdir -p /root/.kube
+  - echo ${GCP_KUBECONF} | base64 -d > /root/.kube/kubeconfig.yaml
+  - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
+  - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/tudor-k8-sandbox.json
+  - export KUBECONFIG=/root/.kube/kubeconfig.yaml
+  - helm init
+  - helm delete --purge gwas-ingest-service || true
+  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.env.envName=gcp-sandbox,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
+  environment:
+    name: sandbox
+  only:
+  - develop
 
 deploy-ingest-sandbox:
   image: dtzar/helm-kubectl:2.13.1
