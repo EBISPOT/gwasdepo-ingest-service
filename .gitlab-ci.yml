@@ -6,7 +6,7 @@ stages:
   - build
   - docker
   - docker-release
-  - deploy-gcp-sandbox
+  - deploy-sandbox
   - deploy-fallback
   - deploy-live
 
@@ -51,13 +51,13 @@ build-ingest-release:
 
 deploy-ingest-gcp-sandbox:
   image: dtzar/helm-kubectl:2.13.1
-  stage: deploy-gcp-sandbox
+  stage: deploy-sandbox
   script:
   - echo "Deploy to GCP sandbox server"
   - mkdir -p /root/.kube
   - echo ${GCP_KUBECONF} | base64 -d > /root/.kube/kubeconfig.yaml
   - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
-  - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/tudor-k8-sandbox.json
+  - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/robot-k8-sandbox.json
   - export KUBECONFIG=/root/.kube/kubeconfig.yaml
   - helm init
   - helm delete --purge gwas-ingest-service || true
