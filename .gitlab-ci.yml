@@ -61,7 +61,7 @@ deploy-ingest-gcp-sandbox:
   - export KUBECONFIG=/root/.kube/kubeconfig.yaml
   - helm init
   - helm delete --purge gwas-ingest-service || true
-  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.env.envName=gcp-sandbox,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
+  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.env.envName=gcp-sandbox,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.dbUser=gwasdepo,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
   environment:
     name: sandbox
   only:
