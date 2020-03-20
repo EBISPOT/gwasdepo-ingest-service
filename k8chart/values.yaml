@@ -32,6 +32,9 @@ service:
 
 k8Namespace: default
 
+ingress:
+  enabled: false
+
 resources:
   limits:
     cpu: 200m
