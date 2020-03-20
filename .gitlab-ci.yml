@@ -67,20 +67,20 @@ deploy-ingest-gcp-sandbox:
   only:
   - develop
 
-deploy-ingest-sandbox:
-  image: dtzar/helm-kubectl:2.13.1
-  stage: deploy-sandbox
-  script:
-  - echo "Deploy to sandbox server"
-  - mkdir -p /root/.kube
-  - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/config
-  - helm init
-  - helm delete --purge gwas-ingest-service || true
-  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
-  environment:
-    name: sandbox
-  only:
-  - develop
+#deploy-ingest-sandbox:
+#  image: dtzar/helm-kubectl:2.13.1
+#  stage: deploy-sandbox
+#  script:
+#  - echo "Deploy to sandbox server"
+#  - mkdir -p /root/.kube
+#  - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/config
+#  - helm init
+#  - helm delete --purge gwas-ingest-service || true
+#  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
+#  environment:
+#    name: sandbox
+#  only:
+#  - develop
 
 deploy-fallback:
   image: dtzar/helm-kubectl:2.13.1
