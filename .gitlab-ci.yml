@@ -55,7 +55,7 @@ deploy-ingest-gcp-sandbox:
   script:
   - echo "Deploy to GCP sandbox server"
   - mkdir -p /root/.kube
-  - echo ${NGNIX_CONF} | base64 -d > /root/.kube/nginx-reverse-proxy-deployment.yaml
+  - echo ${NGINX_CONF} | base64 -d > /root/.kube/nginx-reverse-proxy-deployment.yaml
   - echo ${GCP_KUBECONF} | base64 -d > /root/.kube/kubeconfig.yaml
   - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
   - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/robot-k8-sandbox.json
