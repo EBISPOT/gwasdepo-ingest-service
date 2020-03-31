@@ -4,7 +4,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: production.bok3f.mongodb.net/test?retryWrites=true&w=majority
+      uri: production-shard-00-02.bok3f.mongodb.net:27017,production-shard-00-01.bok3f.mongodb.net:27017,production-shard-00-00.bok3f.mongodb.net:27017/test?authSource=admin&gssapiServiceName=mongodb&replicaSet=atlas-ogm2wz-shard-0&ssl=true
 #      uri: mongodb-hhvm-062.ebi.ac.uk:27017,mongodb-hxvm-063.ebi.ac.uk:27017/admin?replicaSet=gwasdepodevrs039
 
 gwas-ingest-service:
