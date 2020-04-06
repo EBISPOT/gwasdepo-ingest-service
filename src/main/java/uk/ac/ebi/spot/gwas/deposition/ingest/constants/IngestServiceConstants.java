@@ -8,6 +8,6 @@ public class IngestServiceConstants {
 
     public static final String API_SUBMISSION_ENVELOPES = "/submission-envelopes";
 
-    public static final String API_MANUSCRIPTS = "/manuscripts";
+    public static final String API_BODY_OF_WORK = "/bodyofwork";
 
 }

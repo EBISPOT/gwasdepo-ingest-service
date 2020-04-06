@@ -10,11 +10,14 @@ import org.springframework.http.MediaType;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
-import uk.ac.ebi.spot.gwas.deposition.domain.*;
+import uk.ac.ebi.spot.gwas.deposition.domain.Provenance;
+import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
+import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
+import uk.ac.ebi.spot.gwas.deposition.domain.User;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.repository.ManuscriptRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.PublicationRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 
@@ -36,7 +39,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
     private PublicationRepository publicationRepository;
 
     @Autowired
-    private ManuscriptRepository manuscriptRepository;
+    private BodyOfWorkRepository bodyOfWorkRepository;
 
     /**
      * GET /v1/submissions/{submissionId}
@@ -65,7 +68,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
 
         SubmissionDto actual = mapper.readValue(response, new TypeReference<SubmissionDto>() {
         });
-        assertNull(actual.getManuscript());
+        assertNull(actual.getBodyOfWork());
         assertEquals(publication.getPmid(), actual.getPublication().getPmid());
         assertEquals(1, actual.getStudies().size());
         assertEquals(study.getStudyTag(), actual.getStudies().get(0).getStudyTag());
@@ -82,19 +85,8 @@ public class SubmissionsControllerTest extends IntegrationTest {
      */
     @Test
     public void shouldGetSubmissionWithManuscript() throws Exception {
-        Manuscript manuscript = manuscriptRepository.insert(new Manuscript(
-                RandomStringUtils.randomAlphanumeric(10),
-                RandomStringUtils.randomAlphanumeric(10),
-                RandomStringUtils.randomAlphanumeric(10),
-                LocalDate.now(),
-                LocalDate.now(),
-                new CorrespondingAuthor(RandomStringUtils.randomAlphanumeric(10),
-                        RandomStringUtils.randomAlphanumeric(10)),
-                new Provenance(DateTime.now(),
-                        RandomStringUtils.randomAlphanumeric(10))
-        ));
-
-        Submission submission = new Submission(manuscript.getId(), SubmissionProvenanceType.MANUSCRIPT.name(),
+        bodyOfWork = bodyOfWorkRepository.insert(bodyOfWork);
+        Submission submission = new Submission(bodyOfWork.getId(), SubmissionProvenanceType.BODY_OF_WORK.name(),
                 new Provenance(DateTime.now(), user.getId()));
         submission.setCompleted(true);
         submission.setDateSubmitted(LocalDate.now());
@@ -112,7 +104,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         SubmissionDto actual = mapper.readValue(response, new TypeReference<SubmissionDto>() {
         });
         assertNull(actual.getPublication());
-        assertEquals(manuscript.getId(), actual.getManuscript().getManuscriptId());
+        assertEquals(bodyOfWork.getId(), actual.getBodyOfWork().getBodyOfWorkId());
     }
 
     /**

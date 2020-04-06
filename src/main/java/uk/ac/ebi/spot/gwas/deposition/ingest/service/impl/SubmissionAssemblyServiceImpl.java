@@ -29,7 +29,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     private PublicationRepository publicationRepository;
 
     @Autowired
-    private ManuscriptRepository manuscriptRepository;
+    private BodyOfWorkRepository bodyOfWorkRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -49,13 +49,13 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     @Override
     public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
         List<String> pubIds = new ArrayList<>();
-        List<String> manuscriptIds = new ArrayList<>();
+        List<String> bodyOfWorkIds = new ArrayList<>();
         Map<String, User> userMap = new HashMap<>();
         for (Submission submission : submissions) {
             if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
                 pubIds.add(submission.getPublicationId());
             } else {
-                manuscriptIds.add(submission.getManuscriptId());
+                bodyOfWorkIds.addAll(submission.getBodyOfWorks());
             }
             userMap.put(submission.getCreated().getUserId(), null);
         }
@@ -65,10 +65,10 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         for (Publication publication : publications) {
             publicationMap.put(publication.getId(), publication);
         }
-        List<Manuscript> manuscripts = manuscriptRepository.findByIdInAndArchived(manuscriptIds, false);
-        Map<String, Manuscript> manuscriptMap = new HashMap<>();
-        for (Manuscript manuscript : manuscripts) {
-            manuscriptMap.put(manuscript.getId(), manuscript);
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByIdInAndArchived(bodyOfWorkIds, false);
+        Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
+        for (BodyOfWork bodyOfWork : bodyOfWorks) {
+            bodyOfWorksMap.put(bodyOfWork.getId(), bodyOfWork);
         }
         List<String> userIds = new ArrayList<>();
         for (String id : userMap.keySet()) {
@@ -84,7 +84,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
             result.add(new SubmissionEnvelopeDto(
                     submission.getId(),
                     submission.getPublicationId() != null ? PublicationDtoAssembler.assemble(publicationMap.get(submission.getPublicationId())) : null,
-                    submission.getManuscriptId() != null ? ManuscriptDtoAssembler.assemble(manuscriptMap.get(submission.getManuscriptId())) : null,
+                    submission.getBodyOfWorks() != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWorksMap.get(submission.getBodyOfWorks().get(0))) : null,
                     submission.getProvenanceType(),
                     submission.getOverallStatus(),
                     submission.getGlobusFolderId(),
@@ -100,7 +100,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     public SubmissionDto assemble(Submission submission) {
         log.info("Assembling submission: {}", submission.getId());
         Publication publication = null;
-        Manuscript manuscript = null;
+        BodyOfWork bodyOfWork = null;
         if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
             Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
             if (!publicationOptional.isPresent()) {
@@ -109,12 +109,14 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
             }
             publication = publicationOptional.get();
         } else {
-            Optional<Manuscript> manuscriptOptional = manuscriptRepository.findById(submission.getManuscriptId());
-            if (!manuscriptOptional.isPresent()) {
-                log.error("Unable to find manuscript: {}", submission.getManuscriptId());
-                throw new EntityNotFoundException("Unable to find manuscript: " + submission.getManuscriptId());
+            if (!submission.getBodyOfWorks().isEmpty()) {
+                Optional<BodyOfWork> bodyOfWorkOptional = bodyOfWorkRepository.findByIdAndArchived(submission.getBodyOfWorks().get(0), false);
+                if (!bodyOfWorkOptional.isPresent()) {
+                    log.error("Unable to find body of work: {}", submission.getBodyOfWorks());
+                    throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));
+                }
+                bodyOfWork = bodyOfWorkOptional.get();
             }
-            manuscript = manuscriptOptional.get();
         }
 
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
@@ -145,7 +147,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
 
         return new SubmissionDto(submission.getId(),
                 publication != null ? PublicationDtoAssembler.assemble(publication) : null,
-                manuscript != null ? ManuscriptDtoAssembler.assemble(manuscript) : null,
+                bodyOfWork != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWork) : null,
                 submission.getProvenanceType(),
                 submission.getOverallStatus(),
                 submission.getGlobusFolderId(),
