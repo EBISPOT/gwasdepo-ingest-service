@@ -84,9 +84,10 @@ public class SubmissionsControllerTest extends IntegrationTest {
      * GET /v1/submissions/{submissionId}
      */
     @Test
-    public void shouldGetSubmissionWithManuscript() throws Exception {
+    public void shouldGetSubmissionWithBodyOfWork() throws Exception {
+        bodyOfWork.setBowId("GCP123456");
         bodyOfWork = bodyOfWorkRepository.insert(bodyOfWork);
-        Submission submission = new Submission(bodyOfWork.getId(), SubmissionProvenanceType.BODY_OF_WORK.name(),
+        Submission submission = new Submission(bodyOfWork.getBowId(), SubmissionProvenanceType.BODY_OF_WORK.name(),
                 new Provenance(DateTime.now(), user.getId()));
         submission.setCompleted(true);
         submission.setDateSubmitted(LocalDate.now());
@@ -104,7 +105,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         SubmissionDto actual = mapper.readValue(response, new TypeReference<SubmissionDto>() {
         });
         assertNull(actual.getPublication());
-        assertEquals(bodyOfWork.getId(), actual.getBodyOfWork().getBodyOfWorkId());
+        assertEquals(bodyOfWork.getBowId(), actual.getBodyOfWork().getBodyOfWorkId());
     }
 
     /**

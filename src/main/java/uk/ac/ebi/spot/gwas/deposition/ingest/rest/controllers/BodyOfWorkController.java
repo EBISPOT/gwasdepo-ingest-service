@@ -34,7 +34,7 @@ public class BodyOfWorkController {
     public BodyOfWorkDto getBodyOfWork(@PathVariable String bodyofworkId) {
         log.info("Request to get body of work: {}", bodyofworkId);
         BodyOfWork bodyOfWork = bodyOfWorkService.retrieveBodyOfWork(bodyofworkId);
-        log.info("Returning body of work: {}", bodyOfWork.getId());
+        log.info("Returning body of work: {}", bodyOfWork.getBowId());
         return BodyOfWorkDtoAssembler.assemble(bodyOfWork);
     }
 

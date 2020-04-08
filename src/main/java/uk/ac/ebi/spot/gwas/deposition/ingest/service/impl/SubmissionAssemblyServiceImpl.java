@@ -65,7 +65,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         for (Publication publication : publications) {
             publicationMap.put(publication.getId(), publication);
         }
-        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByIdInAndArchived(bodyOfWorkIds, false);
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByBowIdInAndArchived(bodyOfWorkIds, false);
         Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
         for (BodyOfWork bodyOfWork : bodyOfWorks) {
             bodyOfWorksMap.put(bodyOfWork.getId(), bodyOfWork);
@@ -110,7 +110,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
             publication = publicationOptional.get();
         } else {
             if (!submission.getBodyOfWorks().isEmpty()) {
-                Optional<BodyOfWork> bodyOfWorkOptional = bodyOfWorkRepository.findByIdAndArchived(submission.getBodyOfWorks().get(0), false);
+                Optional<BodyOfWork> bodyOfWorkOptional = bodyOfWorkRepository.findByBowIdAndArchived(submission.getBodyOfWorks().get(0), false);
                 if (!bodyOfWorkOptional.isPresent()) {
                     log.error("Unable to find body of work: {}", submission.getBodyOfWorks());
                     throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));

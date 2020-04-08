@@ -23,13 +23,13 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
     @Override
     public BodyOfWork retrieveBodyOfWork(String bodyOfWorkId) {
         log.info("Retrieving body of work: {}", bodyOfWorkId);
-        Optional<BodyOfWork> optionalBodyOfWork = bodyOfWorkRepository.findByIdAndArchived(bodyOfWorkId, false);
+        Optional<BodyOfWork> optionalBodyOfWork = bodyOfWorkRepository.findByBowIdAndArchived(bodyOfWorkId, false);
         if (!optionalBodyOfWork.isPresent()) {
             log.error("Unable to find body of work with ID: {}", bodyOfWorkId);
             throw new EntityNotFoundException("Unable to find body of work with ID: " + bodyOfWorkId);
         }
 
-        log.info("Returning body of work: {}", optionalBodyOfWork.get().getId());
+        log.info("Returning body of work: {}", optionalBodyOfWork.get().getBowId());
         return optionalBodyOfWork.get();
     }
 

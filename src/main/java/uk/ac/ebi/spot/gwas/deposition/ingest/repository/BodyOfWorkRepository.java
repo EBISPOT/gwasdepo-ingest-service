@@ -10,7 +10,7 @@ public interface BodyOfWorkRepository extends MongoRepository<BodyOfWork, String
 
     List<BodyOfWork> findByArchived(boolean archived);
 
-    Optional<BodyOfWork> findByIdAndArchived(String bodyOfWorkId, boolean archived);
+    Optional<BodyOfWork> findByBowIdAndArchived(String bodyOfWorkId, boolean archived);
 
-    List<BodyOfWork> findByIdInAndArchived(List<String> bodyOfWorkIds, boolean archived);
+    List<BodyOfWork> findByBowIdInAndArchived(List<String> bodyOfWorkIds, boolean archived);
 }

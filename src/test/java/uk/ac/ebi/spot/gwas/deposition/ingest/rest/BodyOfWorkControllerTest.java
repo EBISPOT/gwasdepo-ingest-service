@@ -25,6 +25,7 @@ public class BodyOfWorkControllerTest extends IntegrationTest {
     @Before
     public void setup() {
         super.setup();
+        bodyOfWork.setBowId("GCP123456");
         bodyOfWork = bodyOfWorkRepository.insert(bodyOfWork);
     }
 
@@ -32,8 +33,8 @@ public class BodyOfWorkControllerTest extends IntegrationTest {
      * GET /v1/bodyofwork/{bodyofworkId}
      */
     @Test
-    public void shouldGetManuscript() throws Exception {
-        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_BODY_OF_WORK + "/" + bodyOfWork.getId();
+    public void shouldGetBodyOfWork() throws Exception {
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_BODY_OF_WORK + "/" + bodyOfWork.getBowId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -51,7 +52,7 @@ public class BodyOfWorkControllerTest extends IntegrationTest {
      * GET /v1/bodyofwork
      */
     @Test
-    public void shouldGetManuscripts() throws Exception {
+    public void shouldGetBodyOfWorks() throws Exception {
         String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_BODY_OF_WORK;
 
         String response = mockMvc.perform(get(endpoint)

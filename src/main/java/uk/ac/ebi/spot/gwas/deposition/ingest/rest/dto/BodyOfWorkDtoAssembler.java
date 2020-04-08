@@ -16,7 +16,7 @@ public class BodyOfWorkDtoAssembler {
             correspondingAuthorDtoList = bodyOfWork.getCorrespondingAuthors().stream().map(AuthorDtoAssembler::assemble).collect(Collectors.toList());
         }
 
-        return new BodyOfWorkDto(bodyOfWork.getId(),
+        return new BodyOfWorkDto(bodyOfWork.getBowId(),
                 bodyOfWork.getTitle(),
                 bodyOfWork.getDescription(),
                 AuthorDtoAssembler.assemble(bodyOfWork.getFirstAuthor()),
