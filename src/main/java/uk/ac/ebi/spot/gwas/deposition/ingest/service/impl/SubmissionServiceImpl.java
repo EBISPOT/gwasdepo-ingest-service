@@ -5,11 +5,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.spot.gwas.deposition.constants.Status;
+import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
+import uk.ac.ebi.spot.gwas.deposition.domain.CompletedSubmission;
 import uk.ac.ebi.spot.gwas.deposition.domain.Provenance;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.domain.User;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.CompletedSubmissionRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
@@ -30,6 +34,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CompletedSubmissionRepository completedSubmissionRepository;
 
     @Override
     public Submission getSubmission(String submissionId) {
@@ -67,6 +74,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         submission.setOverallStatus(status);
         submission.setLastUpdated(new Provenance(DateTime.now(), curatorUser.getId()));
         submission = submissionRepository.save(submission);
+
+        if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
+            if (status.equalsIgnoreCase(Status.CURATION_COMPLETE.name())) {
+                CompletedSubmission completedSubmission = completedSubmissionRepository.insert(new CompletedSubmission(submissionId, submission.getPublicationId()));
+                log.info("Inserted new completed submission: {} | {} | {}", completedSubmission.getId(),
+                        completedSubmission.getSubmissionId(),
+                        completedSubmission.getPublicationId());
+            }
+        }
         return submission;
     }
 }
