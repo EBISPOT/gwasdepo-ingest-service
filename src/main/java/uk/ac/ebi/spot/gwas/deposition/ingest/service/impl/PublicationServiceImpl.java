@@ -95,7 +95,7 @@ public class PublicationServiceImpl implements PublicationService {
             }
         }
         for (String env : ingestServiceConfig.getServiceEnvironments()) {
-            publicationIngestEntryRepository.insert(new PublicationIngestEntry(publication.getId(), PublicationIngestStatus.UPDATED.name(), env));
+            publicationIngestEntryRepository.insert(new PublicationIngestEntry(existing.getId(), PublicationIngestStatus.UPDATED.name(), env));
         }
     }
 
