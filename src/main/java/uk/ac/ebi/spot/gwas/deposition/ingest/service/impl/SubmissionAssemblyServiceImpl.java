@@ -68,7 +68,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByBowIdInAndArchived(bodyOfWorkIds, false);
         Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
         for (BodyOfWork bodyOfWork : bodyOfWorks) {
-            bodyOfWorksMap.put(bodyOfWork.getId(), bodyOfWork);
+            bodyOfWorksMap.put(bodyOfWork.getBowId(), bodyOfWork);
         }
         List<String> userIds = new ArrayList<>();
         for (String id : userMap.keySet()) {
