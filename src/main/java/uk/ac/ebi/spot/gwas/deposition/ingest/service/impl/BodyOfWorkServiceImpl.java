@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.spot.gwas.deposition.constants.BodyOfWorkStatus;
 import uk.ac.ebi.spot.gwas.deposition.domain.BodyOfWork;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +36,24 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
     }
 
     @Override
-    public List<BodyOfWork> retrieveBodyOfWorks() {
-        log.info("Retrieving body of works.");
-        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByArchived(false);
-        return bodyOfWorks;
+    public List<BodyOfWork> retrieveBodyOfWorks(String status) {
+        log.info("Retrieving body of works: {}", status);
+        if (status != null) {
+            if (status.equalsIgnoreCase(BodyOfWorkStatus.HAS_PMID.name())) {
+                List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByArchived(false);
+                List<BodyOfWork> result = new ArrayList<>();
+                for (BodyOfWork bodyOfWork : bodyOfWorks) {
+                    if (bodyOfWork.getPmids() != null) {
+                        if (!bodyOfWork.getPmids().isEmpty()) {
+                            result.add(bodyOfWork);
+                        }
+                    }
+                }
+                return result;
+            } else {
+                return bodyOfWorkRepository.findByStatusAndArchived(status, false);
+            }
+        }
+        return bodyOfWorkRepository.findByArchived(false);
     }
 }

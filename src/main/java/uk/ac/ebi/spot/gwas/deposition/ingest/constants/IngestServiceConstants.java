@@ -10,4 +10,5 @@ public class IngestServiceConstants {
 
     public static final String API_BODY_OF_WORK = "/bodyofwork";
 
+    public static final String PARAM_STATUS = "status";
 }

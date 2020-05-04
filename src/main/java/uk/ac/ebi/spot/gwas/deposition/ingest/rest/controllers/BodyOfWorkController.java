@@ -43,9 +43,11 @@ public class BodyOfWorkController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public List<BodyOfWorkDto> getBodyOfWorks() {
-        log.info("Request to retrieve body of works.");
-        List<BodyOfWork> facetedBodyOfWorks = bodyOfWorkService.retrieveBodyOfWorks();
+    public List<BodyOfWorkDto> getBodyOfWorks(@RequestParam(value = IngestServiceConstants.PARAM_STATUS,
+                                                        required = false)
+                                                      String status) {
+        log.info("Request to retrieve body of works: {}", status);
+        List<BodyOfWork> facetedBodyOfWorks = bodyOfWorkService.retrieveBodyOfWorks(status);
         return facetedBodyOfWorks.stream().map(BodyOfWorkDtoAssembler::assemble).collect(Collectors.toList());
     }
 }

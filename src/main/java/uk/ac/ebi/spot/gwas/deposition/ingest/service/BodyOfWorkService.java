@@ -7,5 +7,5 @@ import java.util.List;
 public interface BodyOfWorkService {
     BodyOfWork retrieveBodyOfWork(String bodyOfWork);
 
-    List<BodyOfWork> retrieveBodyOfWorks();
+    List<BodyOfWork> retrieveBodyOfWorks(String status);
 }

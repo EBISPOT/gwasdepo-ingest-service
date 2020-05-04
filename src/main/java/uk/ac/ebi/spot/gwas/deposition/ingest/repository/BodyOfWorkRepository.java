@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface BodyOfWorkRepository extends MongoRepository<BodyOfWork, String> {
 
+    List<BodyOfWork> findByStatusAndArchived(String status, boolean archived);
+
     List<BodyOfWork> findByArchived(boolean archived);
 
     Optional<BodyOfWork> findByBowIdAndArchived(String bodyOfWorkId, boolean archived);
