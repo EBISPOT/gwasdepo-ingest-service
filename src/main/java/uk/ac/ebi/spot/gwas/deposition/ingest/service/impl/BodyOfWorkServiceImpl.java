@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.BodyOfWorkStatus;
 import uk.ac.ebi.spot.gwas.deposition.domain.BodyOfWork;
+import uk.ac.ebi.spot.gwas.deposition.domain.BodyOfWorkWatch;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkWatchRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 
 import java.util.ArrayList;
@@ -21,6 +23,9 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
 
     @Autowired
     private BodyOfWorkRepository bodyOfWorkRepository;
+
+    @Autowired
+    private BodyOfWorkWatchRepository bodyOfWorkWatchRepository;
 
     @Override
     public BodyOfWork retrieveBodyOfWork(String bodyOfWorkId) {
@@ -50,9 +55,19 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
                     }
                 }
                 return result;
-            } else {
-                return bodyOfWorkRepository.findByStatusAndArchived(status, false);
             }
+            if (status.equalsIgnoreCase(BodyOfWorkStatus.UPDATED_AFTER_SUBMISSION.name())) {
+                List<String> ids = new ArrayList<>();
+                List<BodyOfWorkWatch> bodyOfWorkWatches = bodyOfWorkWatchRepository.findByVisited(false);
+                for (BodyOfWorkWatch bodyOfWorkWatch : bodyOfWorkWatches) {
+                    ids.add(bodyOfWorkWatch.getBowId());
+                    bodyOfWorkWatch.setVisited(true);
+                    bodyOfWorkWatchRepository.save(bodyOfWorkWatch);
+                }
+                return bodyOfWorkRepository.findByBowIdInAndArchived(ids, false);
+            }
+
+            return bodyOfWorkRepository.findByStatusAndArchived(status, false);
         }
         return bodyOfWorkRepository.findByArchived(false);
     }
