@@ -13,8 +13,8 @@ image:
   env:
     envName: "sandbox"
     logFileName: "ingest-service"
-    xms: "-Xms512m"
-    xmx: "-Xms512m"
+    xms: "-Xms1024m"
+    xmx: "-Xms1024m"
     dbUser: ""
     secretsName: ""
     secretsKey: ""
@@ -30,18 +30,30 @@ service:
   type: NodePort
   port: 8080
 
-k8Namespace: default
-
 ingress:
   enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+  host: chart-example.local
+  path: "/ingest(/|$)(.*)"
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+k8Namespace: default
 
 resources:
   limits:
-    cpu: 50m
-    memory: 512Mi
+    cpu: 200m
+    memory: 2048Mi
   requests:
-    cpu: 10m
-    memory: 512Mi
+    cpu: 100m
+    memory: 1024Mi
 
 nodeSelector: {}
 
