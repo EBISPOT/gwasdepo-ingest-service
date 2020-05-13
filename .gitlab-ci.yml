@@ -21,7 +21,7 @@ maven-build:
   stage: build
   script:
     - echo ${MAVEN_SETTINGS} | base64 -d > settings.xml
-    - mvn -s settings.xml clean install -U -B -Dspring.profiles.active=test
+    - mvn -s settings.xml clean install -B -Dspring.profiles.active=test
   artifacts:
     paths:
       - target/*.jar
@@ -49,43 +49,20 @@ build-ingest-release:
   only:
   - tags
 
-deploy-ingest-gcp-sandbox:
+deploy-ingest-sandbox:
   image: dtzar/helm-kubectl:2.13.1
   stage: deploy-sandbox
   script:
-  - echo "Deploy to GCP sandbox server"
+  - echo "Deploy to sandbox server"
   - mkdir -p /root/.kube
-  - echo ${NGINX_CONF} | base64 -d > /root/.kube/nginx-reverse-proxy-deployment.yaml
-  - echo ${GCP_KUBECONF} | base64 -d > /root/.kube/kubeconfig.yaml
-  - echo ${GCP_ROBOT_CREDENTIALS} | base64 -d > /root/.kube/robot-k8-sandbox.json
-  - export GOOGLE_APPLICATION_CREDENTIALS=/root/.kube/robot-k8-sandbox.json
-  - export KUBECONFIG=/root/.kube/kubeconfig.yaml
-  - cat /root/.kube/nginx-reverse-proxy-deployment.yaml
-  - kubectl get pods
-  - kubectl delete -f /root/.kube/nginx-reverse-proxy-deployment.yaml
+  - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/config
   - helm init
   - helm delete --purge gwas-ingest-service || true
-  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.env.envName=gcp-sandbox,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.dbUser=gwasdepo,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
-  - kubectl create -f /root/.kube/nginx-reverse-proxy-deployment.yaml
+  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
   environment:
     name: sandbox
   only:
   - develop
-
-#deploy-ingest-sandbox:
-#  image: dtzar/helm-kubectl:2.13.1
-#  stage: deploy-sandbox
-#  script:
-#  - echo "Deploy to sandbox server"
-#  - mkdir -p /root/.kube
-#  - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/config
-#  - helm init
-#  - helm delete --purge gwas-ingest-service || true
-#  - helm install --name gwas-ingest-service --set k8Namespace=gwas,image.repository=$INGEST_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA,image.env.secretsName=sandbox-secrets,image.env.secretsKey=db-backend ./k8chart/ --wait
-#  environment:
-#    name: sandbox
-#  only:
-#  - develop
 
 deploy-fallback:
   image: dtzar/helm-kubectl:2.13.1
