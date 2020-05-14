@@ -18,6 +18,13 @@ public class IngestServiceConfig {
     @Value("${gwas-ingest-service.service-environments:#{NULL}}")
     private String serviceEnv;
 
+    @Value("${gwas-ingest-service.db:#{NULL}}")
+    private String dbName;
+
+    public String getDbName() {
+        return dbName;
+    }
+
     public boolean isAuthEnabled() {
         return authEnabled;
     }

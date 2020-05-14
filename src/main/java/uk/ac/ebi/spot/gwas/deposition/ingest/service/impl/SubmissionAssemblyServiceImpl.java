@@ -4,20 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +27,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
 
     @Autowired
     private PublicationRepository publicationRepository;
+
+    @Autowired
+    private BodyOfWorkRepository bodyOfWorkRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -44,12 +47,76 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     private NoteRepository noteRepository;
 
     @Override
+    public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
+        List<String> pubIds = new ArrayList<>();
+        List<String> bodyOfWorkIds = new ArrayList<>();
+        Map<String, User> userMap = new HashMap<>();
+        for (Submission submission : submissions) {
+            if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
+                pubIds.add(submission.getPublicationId());
+            } else {
+                bodyOfWorkIds.addAll(submission.getBodyOfWorks());
+            }
+            userMap.put(submission.getCreated().getUserId(), null);
+        }
+
+        List<Publication> publications = publicationRepository.findByIdIn(pubIds);
+        Map<String, Publication> publicationMap = new HashMap<>();
+        for (Publication publication : publications) {
+            publicationMap.put(publication.getId(), publication);
+        }
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByBowIdInAndArchived(bodyOfWorkIds, false);
+        Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
+        for (BodyOfWork bodyOfWork : bodyOfWorks) {
+            bodyOfWorksMap.put(bodyOfWork.getBowId(), bodyOfWork);
+        }
+        List<String> userIds = new ArrayList<>();
+        for (String id : userMap.keySet()) {
+            userIds.add(id);
+        }
+        List<User> users = userRepository.findByIdIn(userIds);
+        for (User user : users) {
+            userMap.put(user.getId(), user);
+        }
+
+        List<SubmissionEnvelopeDto> result = new ArrayList<>();
+        for (Submission submission : submissions) {
+            result.add(new SubmissionEnvelopeDto(
+                    submission.getId(),
+                    submission.getPublicationId() != null ? PublicationDtoAssembler.assemble(publicationMap.get(submission.getPublicationId())) : null,
+                    submission.getBodyOfWorks() != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWorksMap.get(submission.getBodyOfWorks().get(0))) : null,
+                    submission.getProvenanceType(),
+                    submission.getOverallStatus(),
+                    submission.getGlobusFolderId(),
+                    submission.getGlobusOriginId(),
+                    submission.getDateSubmitted(),
+                    ProvenanceDtoAssembler.assemble(submission.getCreated(), userMap.get(submission.getCreated().getUserId()))
+            ));
+        }
+        return result;
+    }
+
+    @Override
     public SubmissionDto assemble(Submission submission) {
         log.info("Assembling submission: {}", submission.getId());
-        Optional<Publication> publication = publicationRepository.findById(submission.getPublicationId());
-        if (!publication.isPresent()) {
-            log.error("Unable to find publication: {}", submission.getPublicationId());
-            throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+        Publication publication = null;
+        BodyOfWork bodyOfWork = null;
+        if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
+            Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
+            if (!publicationOptional.isPresent()) {
+                log.error("Unable to find publication: {}", submission.getPublicationId());
+                throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+            }
+            publication = publicationOptional.get();
+        } else {
+            if (!submission.getBodyOfWorks().isEmpty()) {
+                Optional<BodyOfWork> bodyOfWorkOptional = bodyOfWorkRepository.findByBowIdAndArchived(submission.getBodyOfWorks().get(0), false);
+                if (!bodyOfWorkOptional.isPresent()) {
+                    log.error("Unable to find body of work: {}", submission.getBodyOfWorks());
+                    throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));
+                }
+                bodyOfWork = bodyOfWorkOptional.get();
+            }
         }
 
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
@@ -79,7 +146,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         }
 
         return new SubmissionDto(submission.getId(),
-                PublicationDtoAssembler.assemble(publication.get()),
+                publication != null ? PublicationDtoAssembler.assemble(publication) : null,
+                bodyOfWork != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWork) : null,
+                submission.getProvenanceType(),
                 submission.getOverallStatus(),
                 submission.getGlobusFolderId(),
                 submission.getGlobusOriginId(),

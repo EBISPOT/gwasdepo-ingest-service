@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.constants.PublicationIngestStatus;
 import uk.ac.ebi.spot.gwas.deposition.constants.PublicationStatus;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
@@ -77,7 +78,7 @@ public class PublicationsControllerTest extends IntegrationTest {
                 null,
                 ssTemplateEntryDtos);
 
-        mockMvc.perform(post(IngestServiceConstants.API_V1 +
+        mockMvc.perform(post(GeneralCommon.API_V1 +
                 IngestServiceConstants.API_PUBLICATIONS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(extendedPublicationDto)))
@@ -97,7 +98,7 @@ public class PublicationsControllerTest extends IntegrationTest {
     @Test
     public void shouldGetPublications() throws Exception {
         Publication publication = createPublication();
-        String response = mockMvc.perform(get(IngestServiceConstants.API_V1 +
+        String response = mockMvc.perform(get(GeneralCommon.API_V1 +
                 IngestServiceConstants.API_PUBLICATIONS)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -121,7 +122,7 @@ public class PublicationsControllerTest extends IntegrationTest {
     public void shouldGetPublication() throws Exception {
         Publication publication = createPublication();
 
-        String response = mockMvc.perform(get(IngestServiceConstants.API_V1 +
+        String response = mockMvc.perform(get(GeneralCommon.API_V1 +
                 IngestServiceConstants.API_PUBLICATIONS + "/" + publication.getPmid())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -160,7 +161,7 @@ public class PublicationsControllerTest extends IntegrationTest {
                 PublicationStatus.CURATION_STARTED.name(),
                 ssTemplateEntryDtos);
 
-        mockMvc.perform(put(IngestServiceConstants.API_V1 +
+        mockMvc.perform(put(GeneralCommon.API_V1 +
                 IngestServiceConstants.API_PUBLICATIONS + "/" + extendedPublicationDto.getPmid())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(extendedPublicationDto)))
@@ -188,7 +189,7 @@ public class PublicationsControllerTest extends IntegrationTest {
                         publication.getCorrespondingAuthor().getEmail()),
                 null);
 
-        mockMvc.perform(post(IngestServiceConstants.API_V1 +
+        mockMvc.perform(post(GeneralCommon.API_V1 +
                 IngestServiceConstants.API_PUBLICATIONS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(publicationDto)))

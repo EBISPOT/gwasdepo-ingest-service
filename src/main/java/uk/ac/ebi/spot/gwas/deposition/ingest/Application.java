@@ -9,15 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import uk.ac.ebi.spot.gwas.deposition.ingest.config.SystemConfigProperties;
-import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
+import uk.ac.ebi.spot.gwas.deposition.config.SystemConfigProperties;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-@SpringBootApplication(scanBasePackages = "uk.ac.ebi.spot.gwas.deposition.ingest")
+@SpringBootApplication(scanBasePackages = "uk.ac.ebi.spot.gwas.deposition")
 @EnableScheduling
 @EnableAsync
 public class Application implements WebMvcConfigurer {
@@ -39,7 +39,7 @@ public class Application implements WebMvcConfigurer {
 
     public static void main(String[] args) throws UnknownHostException {
         String hostAddress = InetAddress.getLocalHost().getHostAddress();
-        String logFileName = System.getenv(IngestServiceConstants.LOG_FILE_NAME);
+        String logFileName = System.getenv(GeneralCommon.LOG_FILE_NAME);
         System.setProperty("log.file.name", logFileName + "-" + hostAddress);
         SpringApplication.run(Application.class, args);
     }

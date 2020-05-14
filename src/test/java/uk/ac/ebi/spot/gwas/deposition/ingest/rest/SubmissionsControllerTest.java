@@ -7,13 +7,17 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
+import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.Provenance;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.domain.User;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.PublicationRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 
@@ -21,8 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,13 +38,17 @@ public class SubmissionsControllerTest extends IntegrationTest {
     @Autowired
     private PublicationRepository publicationRepository;
 
+    @Autowired
+    private BodyOfWorkRepository bodyOfWorkRepository;
+
     /**
      * GET /v1/submissions/{submissionId}
      */
     @Test
     public void shouldGetSubmission() throws Exception {
         Publication publication = publicationRepository.insert(TestUtil.publication());
-        Submission submission = new Submission(publication.getId(), new Provenance(DateTime.now(), user.getId()));
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
         submission.setCompleted(true);
         submission.setStudies(Arrays.asList(new String[]{study.getId()}));
         submission.setNotes(Arrays.asList(new String[]{note.getId()}));
@@ -50,7 +57,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setDateSubmitted(LocalDate.now());
         submission = submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -61,6 +68,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
 
         SubmissionDto actual = mapper.readValue(response, new TypeReference<SubmissionDto>() {
         });
+        assertNull(actual.getBodyOfWork());
         assertEquals(publication.getPmid(), actual.getPublication().getPmid());
         assertEquals(1, actual.getStudies().size());
         assertEquals(study.getStudyTag(), actual.getStudies().get(0).getStudyTag());
@@ -73,12 +81,41 @@ public class SubmissionsControllerTest extends IntegrationTest {
     }
 
     /**
+     * GET /v1/submissions/{submissionId}
+     */
+    @Test
+    public void shouldGetSubmissionWithBodyOfWork() throws Exception {
+        bodyOfWork.setBowId("GCP123456");
+        bodyOfWork = bodyOfWorkRepository.insert(bodyOfWork);
+        Submission submission = new Submission(bodyOfWork.getBowId(), SubmissionProvenanceType.BODY_OF_WORK.name(),
+                new Provenance(DateTime.now(), user.getId()));
+        submission.setCompleted(true);
+        submission.setDateSubmitted(LocalDate.now());
+        submission = submissionRepository.insert(submission);
+
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+
+        String response = mockMvc.perform(get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        SubmissionDto actual = mapper.readValue(response, new TypeReference<SubmissionDto>() {
+        });
+        assertNull(actual.getPublication());
+        assertEquals(bodyOfWork.getBowId(), actual.getBodyOfWork().getBodyOfWorkId());
+    }
+
+    /**
      * GET /v1/submissions
      */
     @Test
     public void shouldGetSubmissions() throws Exception {
         Publication publication = publicationRepository.insert(TestUtil.publication());
-        Submission submission = new Submission(publication.getId(), new Provenance(DateTime.now(), user.getId()));
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
         submission.setStudies(Arrays.asList(new String[]{study.getId()}));
         submission.setNotes(Arrays.asList(new String[]{note.getId()}));
         submission.setAssociations(Arrays.asList(new String[]{association.getId()}));
@@ -86,7 +123,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setCompleted(true);
         submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS;
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS;
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -107,12 +144,44 @@ public class SubmissionsControllerTest extends IntegrationTest {
     }
 
     /**
+     * GET /v1/submission-envelopes
+     */
+    @Test
+    public void shouldGetSubmissionEnvelopes() throws Exception {
+        Publication publication = publicationRepository.insert(TestUtil.publication());
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
+        submission.setStudies(Arrays.asList(new String[]{study.getId()}));
+        submission.setNotes(Arrays.asList(new String[]{note.getId()}));
+        submission.setAssociations(Arrays.asList(new String[]{association.getId()}));
+        submission.setSamples(Arrays.asList(new String[]{sample.getId()}));
+        submission.setCompleted(true);
+        submissionRepository.insert(submission);
+
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSION_ENVELOPES;
+
+        String response = mockMvc.perform(get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<SubmissionEnvelopeDto> actual = mapper.readValue(response, new TypeReference<List<SubmissionEnvelopeDto>>() {
+        });
+
+        assertEquals(1, actual.size());
+        assertEquals(publication.getPmid(), actual.get(0).getPublication().getPmid());
+    }
+
+    /**
      * PUT /v1/submissions/{submissionId}
      */
     @Test
     public void shouldUpdateSubmissionStatus() throws Exception {
         Publication publication = publicationRepository.insert(TestUtil.publication());
-        Submission submission = new Submission(publication.getId(), new Provenance(DateTime.now(), user.getId()));
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
         submission.setCompleted(true);
         submission.setGlobusFolderId(RandomStringUtils.randomAlphanumeric(10));
         submission.setGlobusOriginId(RandomStringUtils.randomAlphanumeric(10));
@@ -123,7 +192,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
         submission.setDateSubmitted(LocalDate.now());
         submission = submissionRepository.insert(submission);
 
-        String endpoint = IngestServiceConstants.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "/" + submission.getId();
 
         String response = mockMvc.perform(get(endpoint)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -142,6 +211,8 @@ public class SubmissionsControllerTest extends IntegrationTest {
 
         SubmissionDto updated = new SubmissionDto(actual.getSubmissionId(),
                 actual.getPublication(),
+                null,
+                SubmissionProvenanceType.PUBLICATION.name(),
                 Status.CURATOR_REVIEW.name(),
                 actual.getGlobusFolder(),
                 actual.getGlobusOriginId(),

@@ -2,6 +2,8 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.Application;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
+
+import java.util.ArrayList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -69,6 +73,8 @@ public abstract class IntegrationTest {
 
     protected User user;
 
+    protected BodyOfWork bodyOfWork;
+
     @Before
     public void setup() {
         mongoTemplate.getDb().drop();
@@ -78,6 +84,25 @@ public abstract class IntegrationTest {
         user = userRepository.insert(TestUtil.user());
         userRepository.insert(new User("Auto Curator", "auto-curator-service@ebi.ac.uk"));
         createPrerequisites();
+
+        Author author = new Author(RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10));
+        bodyOfWork = new BodyOfWork(RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                author,
+                author,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                LocalDate.now(),
+                true,
+                new Provenance(DateTime.now(), user.getId()));
     }
 
     private void createPrerequisites() {
