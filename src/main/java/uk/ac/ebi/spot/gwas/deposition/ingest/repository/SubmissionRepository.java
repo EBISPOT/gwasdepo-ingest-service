@@ -11,4 +11,6 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
     Optional<Submission> findByIdAndArchived(String id, boolean archived);
 
     List<Submission> findByArchived(boolean archived);
+
+    List<Submission> findByBodyOfWorksContainsAndArchived(String bowId, boolean archived);
 }

@@ -14,6 +14,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.PublicationDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.ExtendedPublicationDtoAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.PublicationDtoAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
 
 import javax.validation.Valid;
@@ -28,6 +29,9 @@ public class PublicationsController {
 
     @Autowired
     private PublicationService publicationService;
+
+    @Autowired
+    private BodyOfWorkService bodyOfWorkService;
 
     /**
      * GET /v1/publications
@@ -51,7 +55,8 @@ public class PublicationsController {
         log.info("Request to create publication: {}.", extendedPublicationDto.getPmid());
         Publication publication = PublicationDtoAssembler.disassemble(ExtendedPublicationDtoAssembler.disassemble(extendedPublicationDto));
         SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder = ExtendedPublicationDtoAssembler.disassembleTemplateEntries(extendedPublicationDto);
-        publicationService.createPublication(publication, ssTemplateEntryPlaceholder);
+        Publication created = publicationService.createPublication(publication, ssTemplateEntryPlaceholder);
+        bodyOfWorkService.findAndUpdateBasedOnPMID(created);
     }
 
     /**

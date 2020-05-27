@@ -9,7 +9,7 @@ public interface PublicationService {
 
     List<Publication> getPublications();
 
-    void createPublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder);
+    Publication createPublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder);
 
     void updatePublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder);
 
