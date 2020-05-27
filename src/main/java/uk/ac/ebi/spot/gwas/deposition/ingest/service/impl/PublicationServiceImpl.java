@@ -50,7 +50,7 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
-    public void createPublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder) {
+    public Publication createPublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder) {
         log.info("Creating publication with PMID: {}", publication.getPmid());
         Optional<Publication> optionalPublication = publicationRepository.findByPmid(publication.getPmid());
         if (optionalPublication.isPresent()) {
@@ -68,6 +68,7 @@ public class PublicationServiceImpl implements PublicationService {
         for (String env : ingestServiceConfig.getServiceEnvironments()) {
             publicationIngestEntryRepository.insert(new PublicationIngestEntry(publication.getId(), PublicationIngestStatus.CREATED.name(), env));
         }
+        return publication;
     }
 
     @Override

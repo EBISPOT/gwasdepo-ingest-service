@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.BodyOfWorkStatus;
 import uk.ac.ebi.spot.gwas.deposition.domain.BodyOfWork;
 import uk.ac.ebi.spot.gwas.deposition.domain.BodyOfWorkWatch;
+import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
+import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.BodyOfWorkWatchRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
 
     @Autowired
     private BodyOfWorkWatchRepository bodyOfWorkWatchRepository;
+
+    @Autowired
+    private SubmissionRepository submissionRepository;
 
     @Override
     public BodyOfWork retrieveBodyOfWork(String bodyOfWorkId) {
@@ -70,5 +76,23 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
             return bodyOfWorkRepository.findByStatusAndArchived(status, false);
         }
         return bodyOfWorkRepository.findByArchived(false);
+    }
+
+    @Override
+    public void findAndUpdateBasedOnPMID(Publication publication) {
+        log.info("Verifying if there are any body of works linked to PMID: {}", publication.getPmid());
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByPmidsContainsAndArchived(publication.getPmid(), false);
+        log.info("Found {} body of works.", bodyOfWorks.size());
+        for (BodyOfWork bodyOfWork : bodyOfWorks) {
+            List<Submission> submissionList = submissionRepository.findByBodyOfWorksContainsAndArchived(bodyOfWork.getBowId(), false);
+
+            log.info("Found {} submissions linked to BOW: {}", submissionList.size(), bodyOfWork.getBowId());
+            for (Submission submission : submissionList) {
+                if (submission.getPublicationId() == null) {
+                    submission.setPublicationId(publication.getId());
+                    submissionRepository.save(submission);
+                }
+            }
+        }
     }
 }
