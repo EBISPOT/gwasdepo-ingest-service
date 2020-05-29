@@ -56,6 +56,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
                 pubIds.add(submission.getPublicationId());
             } else {
                 bodyOfWorkIds.addAll(submission.getBodyOfWorks());
+                if (submission.getPublicationId() != null) {
+                    pubIds.add(submission.getPublicationId());
+                }
             }
             userMap.put(submission.getCreated().getUserId(), null);
         }
@@ -116,6 +119,14 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
                     throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));
                 }
                 bodyOfWork = bodyOfWorkOptional.get();
+                if (submission.getPublicationId() != null) {
+                    Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
+                    if (!publicationOptional.isPresent()) {
+                        log.error("Unable to find publication: {}", submission.getPublicationId());
+                        throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+                    }
+                    publication = publicationOptional.get();
+                }
             }
         }
 
