@@ -11,4 +11,6 @@ public interface SubmissionService {
     List<Submission> getSubmissions();
 
     Submission updateSubmission(String submissionId, String status);
+
+    Submission getSubmissionForPublication(String id);
 }

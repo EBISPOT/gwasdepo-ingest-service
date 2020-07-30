@@ -85,4 +85,17 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
         return submission;
     }
+
+    @Override
+    public Submission getSubmissionForPublication(String id) {
+        log.info("Retrieving submission for publication: {}", id);
+        Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(id, false);
+        if (!optionalSubmission.isPresent()) {
+            log.error("Unable to find submission for publication: {}", id);
+            throw new EntityNotFoundException("Unable to find submission for publication: " + id);
+        }
+        log.info("Submission successfully retrieved: {}", optionalSubmission.get().getId());
+        return optionalSubmission.get();
+    }
+
 }
