@@ -112,4 +112,16 @@ public class PublicationServiceImpl implements PublicationService {
         log.info("Found publication [{}] for PMID: {}", optionalPublication.get().getId(), pmid);
         return optionalPublication.get();
     }
+
+    @Override
+    public void deletePublication(String pmid) {
+        log.info("Deleting publication with PMID: {}", pmid);
+        Optional<Publication> optionalPublication = publicationRepository.findByPmid(pmid);
+        if (optionalPublication.isPresent()) {
+            log.info("Publication found and will be deleted.");
+            publicationRepository.delete(optionalPublication.get());
+        } else {
+            log.error("Publicaiton not found!");
+        }
+    }
 }

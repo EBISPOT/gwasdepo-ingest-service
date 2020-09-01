@@ -98,4 +98,12 @@ public class SubmissionServiceImpl implements SubmissionService {
         return optionalSubmission.get();
     }
 
+    @Override
+    public boolean submissionExistsForPublication(String id) {
+        log.info("Verifying if submission exists for publication: {}", id);
+        Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(id, false);
+        log.info("Submission exists: {}", optionalSubmission.isPresent());
+        return optionalSubmission.isPresent();
+    }
+
 }

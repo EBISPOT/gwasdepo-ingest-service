@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
+import uk.ac.ebi.spot.gwas.deposition.constants.PublicationStatus;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.SSTemplateEntryPlaceholder;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.ExtendedPublicationDto;
@@ -16,6 +17,7 @@ import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.ExtendedPublicationDtoAsse
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.PublicationDtoAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,6 +34,9 @@ public class PublicationsController {
 
     @Autowired
     private BodyOfWorkService bodyOfWorkService;
+
+    @Autowired
+    private SubmissionService submissionService;
 
     /**
      * GET /v1/publications
@@ -84,4 +89,29 @@ public class PublicationsController {
         return PublicationDtoAssembler.assemble(publication);
     }
 
+    /**
+     * DELETE /v1/publications/{pmid}
+     */
+    @DeleteMapping(value = "/{pmid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean deletePublication(@PathVariable String pmid) {
+        log.info("Request to delete publication: {}", pmid);
+        Publication publication = publicationService.getPublication(pmid);
+        if (publication.getStatus().equalsIgnoreCase(PublicationStatus.UNDER_SUBMISSION.name()) ||
+                publication.getStatus().equalsIgnoreCase(PublicationStatus.UNDER_SUMMARY_STATS_SUBMISSION.name()) ||
+                publication.getStatus().equalsIgnoreCase(PublicationStatus.CURATION_STARTED.name())) {
+            log.error("Unable to delete publication. Status is: {}", publication.getStatus());
+            return false;
+        }
+
+        boolean hasAssoc = submissionService.submissionExistsForPublication(publication.getId()) ||
+                bodyOfWorkService.bowExistsForPublication(pmid);
+        log.info("Publication has associations: {}", hasAssoc);
+
+        if (!hasAssoc) {
+            publicationService.deletePublication(pmid);
+        }
+        return !hasAssoc;
+    }
 }

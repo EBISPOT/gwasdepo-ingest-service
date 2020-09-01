@@ -95,4 +95,12 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
             }
         }
     }
+
+    @Override
+    public boolean bowExistsForPublication(String pmid) {
+        log.info("Verifying if there are any body of works linked to PMID: {}", pmid);
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByPmidsContainsAndArchived(pmid, false);
+        log.info("Found {} body of works.", bodyOfWorks.size());
+        return bodyOfWorks.size() != 0;
+    }
 }
