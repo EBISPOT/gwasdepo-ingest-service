@@ -61,7 +61,10 @@ public class PublicationsController {
         Publication publication = PublicationDtoAssembler.disassemble(ExtendedPublicationDtoAssembler.disassemble(extendedPublicationDto));
         SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder = ExtendedPublicationDtoAssembler.disassembleTemplateEntries(extendedPublicationDto);
         Publication created = publicationService.createPublication(publication, ssTemplateEntryPlaceholder);
-        bodyOfWorkService.findAndUpdateBasedOnPMID(created);
+        boolean found = bodyOfWorkService.findAndUpdateBasedOnPMID(created);
+        if (found) {
+            publicationService.updatePublicationStatus(created, PublicationStatus.UNDER_SUBMISSION.name());
+        }
     }
 
     /**

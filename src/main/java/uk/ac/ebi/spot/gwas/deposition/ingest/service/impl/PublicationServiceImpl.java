@@ -124,4 +124,15 @@ public class PublicationServiceImpl implements PublicationService {
             log.error("Publicaiton not found!");
         }
     }
+
+    @Override
+    public void updatePublicationStatus(Publication publication, String status) {
+        log.info("Updating publication status: {} | {}", publication.getPmid(), status);
+        Optional<Publication> optionalPublication = publicationRepository.findByPmid(publication.getPmid());
+        if (optionalPublication.isPresent()) {
+            Publication existing = optionalPublication.get();
+            existing.setStatus(status);
+            publicationRepository.save(existing);
+        }
+    }
 }

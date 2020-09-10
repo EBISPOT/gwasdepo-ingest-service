@@ -10,7 +10,7 @@ public interface BodyOfWorkService {
 
     List<BodyOfWork> retrieveBodyOfWorks(String status);
 
-    void findAndUpdateBasedOnPMID(Publication publication);
+    boolean findAndUpdateBasedOnPMID(Publication publication);
 
     boolean bowExistsForPublication(String pmid);
 }

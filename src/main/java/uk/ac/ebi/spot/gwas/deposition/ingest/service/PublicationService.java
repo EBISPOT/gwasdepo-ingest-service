@@ -16,4 +16,6 @@ public interface PublicationService {
     Publication getPublication(String pmid);
 
     void deletePublication(String pmid);
+
+    void updatePublicationStatus(Publication publication, String status);
 }
