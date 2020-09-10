@@ -13,4 +13,6 @@ public interface SubmissionService {
     Submission updateSubmission(String submissionId, String status);
 
     Submission getSubmissionForPublication(String id);
+
+    boolean submissionExistsForPublication(String id);
 }

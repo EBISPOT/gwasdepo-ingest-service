@@ -14,4 +14,8 @@ public interface PublicationService {
     void updatePublication(Publication publication, SSTemplateEntryPlaceholder ssTemplateEntryPlaceholder);
 
     Publication getPublication(String pmid);
+
+    void deletePublication(String pmid);
+
+    void updatePublicationStatus(Publication publication, String status);
 }

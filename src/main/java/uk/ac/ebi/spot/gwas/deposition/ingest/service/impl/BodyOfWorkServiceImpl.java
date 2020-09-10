@@ -79,10 +79,11 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
     }
 
     @Override
-    public void findAndUpdateBasedOnPMID(Publication publication) {
+    public boolean findAndUpdateBasedOnPMID(Publication publication) {
         log.info("Verifying if there are any body of works linked to PMID: {}", publication.getPmid());
         List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByPmidsContainsAndArchived(publication.getPmid(), false);
         log.info("Found {} body of works.", bodyOfWorks.size());
+        boolean found = false;
         for (BodyOfWork bodyOfWork : bodyOfWorks) {
             List<Submission> submissionList = submissionRepository.findByBodyOfWorksContainsAndArchived(bodyOfWork.getBowId(), false);
 
@@ -91,8 +92,18 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
                 if (submission.getPublicationId() == null) {
                     submission.setPublicationId(publication.getId());
                     submissionRepository.save(submission);
+                    found = true;
                 }
             }
         }
+        return found;
+    }
+
+    @Override
+    public boolean bowExistsForPublication(String pmid) {
+        log.info("Verifying if there are any body of works linked to PMID: {}", pmid);
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByPmidsContainsAndArchived(pmid, false);
+        log.info("Found {} body of works.", bodyOfWorks.size());
+        return bodyOfWorks.size() != 0;
     }
 }
