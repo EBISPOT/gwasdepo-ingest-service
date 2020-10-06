@@ -18,6 +18,8 @@ import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,8 +53,15 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public List<Submission> getSubmissions() {
+    public List<Submission> getSubmissions(String publicationId) {
         log.info("Retrieving submissions.");
+        if (publicationId != null) {
+            Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(publicationId, false);
+            if (optionalSubmission.isPresent()) {
+                return Arrays.asList(new Submission[] {optionalSubmission.get()});
+            }
+            return new ArrayList<>();
+        }
         List<Submission> submissions = submissionRepository.findByArchived(false);
         log.info("Found {} submissions.", submissions.size());
         return submissions;

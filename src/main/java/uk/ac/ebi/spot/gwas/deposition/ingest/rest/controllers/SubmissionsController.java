@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
+import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 
@@ -27,6 +29,9 @@ public class SubmissionsController {
 
     @Autowired
     private SubmissionAssemblyService submissionAssemblyService;
+
+    @Autowired
+    private PublicationService publicationService;
 
     /**
      * GET /v1/submissions/{submissionId}
@@ -46,9 +51,21 @@ public class SubmissionsController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public List<SubmissionDto> getSubmissions() {
-        log.info("Request to retrieve all submissions.");
-        List<Submission> submissions = submissionService.getSubmissions();
+    public List<SubmissionDto> getSubmissions(@RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false)
+                                                      String pmid) {
+        log.info("Request to retrieve all submissions - including for PMID: {}", pmid);
+        String pubId = null;
+        if (pmid != null) {
+            try {
+                Publication publication = publicationService.getPublication(pmid);
+                log.info("Found publication: {}", publication.getId());
+                pubId = publication.getId();
+            } catch (Exception e) {
+                log.error("Error when retrieving publication [{}]: {}", pmid, e.getMessage(), e);
+            }
+        }
+
+        List<Submission> submissions = submissionService.getSubmissions(pubId);
         log.info("Found {} submissions.", submissions.size());
         List<SubmissionDto> submissionDtos = new ArrayList<>();
         for (Submission submission : submissions) {
