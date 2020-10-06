@@ -8,7 +8,7 @@ public interface SubmissionService {
 
     Submission getSubmission(String submissionId);
 
-    List<Submission> getSubmissions();
+    List<Submission> getSubmissions(String publicationId);
 
     Submission updateSubmission(String submissionId, String status);
 
