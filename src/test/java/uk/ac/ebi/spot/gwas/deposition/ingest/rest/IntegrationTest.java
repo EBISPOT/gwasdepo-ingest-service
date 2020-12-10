@@ -45,16 +45,16 @@ public abstract class IntegrationTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private StudyRepository studyRepository;
+    protected StudyRepository studyRepository;
 
     @Autowired
-    private SampleRepository sampleRepository;
+    protected SampleRepository sampleRepository;
 
     @Autowired
-    private AssociationRepository associationRepository;
+    protected AssociationRepository associationRepository;
 
     @Autowired
-    private NoteRepository noteRepository;
+    protected NoteRepository noteRepository;
 
     @Autowired
     protected UserRepository userRepository;
@@ -106,8 +106,9 @@ public abstract class IntegrationTest {
     }
 
     private void createPrerequisites() {
+        String studyTag = RandomStringUtils.randomAlphanumeric(10);
         study = new Study();
-        study.setStudyTag(RandomStringUtils.randomAlphanumeric(10));
+        study.setStudyTag(studyTag);
         study.setGenotypingTechnology(RandomStringUtils.randomAlphanumeric(10));
         study.setArrayManufacturer(RandomStringUtils.randomAlphanumeric(10));
         study.setArrayInformation(RandomStringUtils.randomAlphanumeric(10));
@@ -127,11 +128,11 @@ public abstract class IntegrationTest {
         note.setNote(RandomStringUtils.randomAlphanumeric(10));
         note.setNoteSubject(RandomStringUtils.randomAlphanumeric(10));
         note.setStatus(RandomStringUtils.randomAlphanumeric(10));
-        note.setStudyTag(RandomStringUtils.randomAlphanumeric(10));
+        note.setStudyTag(studyTag);
         note = noteRepository.insert(note);
 
         sample = new Sample();
-        sample.setStudyTag(RandomStringUtils.randomAlphanumeric(10));
+        sample.setStudyTag(studyTag);
         sample.setStage(RandomStringUtils.randomAlphanumeric(10));
         sample.setSize(10);
         sample.setCases(10);
@@ -144,7 +145,7 @@ public abstract class IntegrationTest {
         sample = sampleRepository.insert(sample);
 
         association = new Association();
-        association.setStudyTag(RandomStringUtils.randomAlphanumeric(10));
+        association.setStudyTag(studyTag);
         association.setHaplotypeId(RandomStringUtils.randomAlphanumeric(10));
         association.setVariantId(RandomStringUtils.randomAlphanumeric(10));
         association.setPvalue("10.0");

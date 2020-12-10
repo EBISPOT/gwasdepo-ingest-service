@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface NoteRepository extends MongoRepository<Note, String> {
     List<Note> findByIdIn(List<String> noteIds);
+
+    List<Note> findByStudyTagAndSubmissionId(String studyTag, String submissionId);
+
 }
