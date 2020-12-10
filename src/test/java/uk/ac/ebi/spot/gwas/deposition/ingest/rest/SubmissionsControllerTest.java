@@ -221,6 +221,7 @@ public class SubmissionsControllerTest extends IntegrationTest {
                 actual.getSamples(),
                 actual.getNotes(),
                 actual.getDateSubmitted(),
+                actual.getMetadata(),
                 actual.getCreated());
 
         response = mockMvc.perform(put(endpoint)

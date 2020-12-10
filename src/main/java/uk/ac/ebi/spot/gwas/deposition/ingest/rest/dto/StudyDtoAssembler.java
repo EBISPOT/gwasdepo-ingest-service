@@ -1,7 +1,12 @@
 package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
+import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
+
+import java.util.List;
 
 public class StudyDtoAssembler {
 
@@ -21,11 +26,43 @@ public class StudyDtoAssembler {
                 study.getBackgroundTrait(),
                 study.getBackgroundEfoTrait(),
                 study.getSummaryStatisticsFile(),
+                study.getRawFilePath(),
                 study.getChecksum(),
                 study.getSummaryStatisticsAssembly(),
                 study.getReadmeFile(),
                 study.getCohort(),
-                study.getCohortId());
+                study.getCohortId(),
+                null,
+                null,
+                null);
+    }
+
+    public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
+                                    List<SampleDto> sampleDtos, List<NoteDto> noteDtos) {
+        return new StudyDto(study.getStudyTag(),
+                study.getAccession(),
+                study.getGenotypingTechnology(),
+                study.getArrayManufacturer(),
+                study.getArrayInformation(),
+                study.getImputation(),
+                study.getVariantCount(),
+                study.getSampleDescription(),
+                study.getStatisticalModel(),
+                study.getStudyDescription(),
+                study.getTrait(),
+                study.getEfoTrait(),
+                study.getBackgroundTrait(),
+                study.getBackgroundEfoTrait(),
+                study.getSummaryStatisticsFile(),
+                study.getRawFilePath(),
+                study.getChecksum(),
+                study.getSummaryStatisticsAssembly(),
+                study.getReadmeFile(),
+                study.getCohort(),
+                study.getCohortId(),
+                associationDtos,
+                sampleDtos,
+                noteDtos);
     }
 
     public static Study disassemble(StudyDto studyDto) {
