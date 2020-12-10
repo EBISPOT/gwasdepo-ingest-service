@@ -10,6 +10,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.MetadataDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
@@ -168,6 +169,10 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
                 sampleDtos,
                 noteDtos,
                 submission.getDateSubmitted(),
+                new MetadataDto(submission.getStudies().size(),
+                        submission.getAssociations().size(),
+                        submission.getSamples().size(),
+                        submission.getNotes().size()),
                 ProvenanceDtoAssembler.assemble(submission.getCreated(), userOpt.get()));
     }
 }
