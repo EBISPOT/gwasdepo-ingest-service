@@ -37,7 +37,7 @@ public class EnvelopeSubmissionsController {
     @ResponseStatus(HttpStatus.OK)
     public List<SubmissionEnvelopeDto> getSubmissions() {
         log.info("Request to retrieve all submissions.");
-        List<Submission> submissions = submissionService.getSubmissions(null);
+        List<Submission> submissions = submissionService.getSubmissions(null, null);
         log.info("Found {} submissions.", submissions.size());
         List<SubmissionEnvelopeDto> submissionDtos = submissionAssemblyService.assembleEnvelopes(submissions);
         return submissionDtos;
