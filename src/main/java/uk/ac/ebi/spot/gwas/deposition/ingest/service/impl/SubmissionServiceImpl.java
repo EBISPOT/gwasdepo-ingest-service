@@ -17,6 +17,7 @@ import uk.ac.ebi.spot.gwas.deposition.ingest.repository.CompletedSubmissionRepos
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.util.SubmissionsUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,16 +54,18 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public List<Submission> getSubmissions(String publicationId) {
-        log.info("Retrieving submissions.");
+    public List<Submission> getSubmissions(String publicationId, String status) {
+        log.info("Retrieving submissions: {} | {}", publicationId, status);
         if (publicationId != null) {
             Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(publicationId, false);
             if (optionalSubmission.isPresent()) {
-                return Arrays.asList(new Submission[] {optionalSubmission.get()});
+                return Arrays.asList(new Submission[]{optionalSubmission.get()});
             }
             return new ArrayList<>();
         }
-        List<Submission> submissions = submissionRepository.findByArchived(false);
+        List<Submission> submissions = status == null ? submissionRepository.findByArchived(false) :
+                status.equalsIgnoreCase("OTHER") ? SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false)) :
+                        submissionRepository.findByOverallStatusAndArchived(status, false);
         log.info("Found {} submissions.", submissions.size());
         return submissions;
     }
