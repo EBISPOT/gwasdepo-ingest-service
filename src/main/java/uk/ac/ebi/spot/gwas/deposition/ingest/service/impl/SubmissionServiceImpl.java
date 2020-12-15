@@ -63,9 +63,21 @@ public class SubmissionServiceImpl implements SubmissionService {
             }
             return new ArrayList<>();
         }
-        List<Submission> submissions = status == null ? submissionRepository.findByArchived(false) :
-                status.equalsIgnoreCase("OTHER") ? SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false)) :
-                        submissionRepository.findByOverallStatusAndArchived(status, false);
+        List<Submission> submissions;
+        if (status == null) {
+            submissions = submissionRepository.findByArchived(false);
+        } else {
+            if (status.equalsIgnoreCase("OTHER")) {
+                submissions = SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false));
+            } else {
+                if (status.equalsIgnoreCase("READY_TO_IMPORT")) {
+                    submissions = SubmissionsUtil.filterForReadyToImport(submissionRepository.findByOverallStatusAndArchived(Status.SUBMITTED.name(), false));
+                } else {
+                    submissions = submissionRepository.findByOverallStatusAndArchived(status, false);
+                }
+            }
+        }
+
         log.info("Found {} submissions.", submissions.size());
         return submissions;
     }
