@@ -52,8 +52,10 @@ public class SubmissionsController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<SubmissionDto> getSubmissions(@RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false)
-                                                      String pmid) {
-        log.info("Request to retrieve all submissions - including for PMID: {}", pmid);
+                                                      String pmid,
+                                              @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false)
+                                                      String status) {
+        log.info("Request to retrieve all submissions - including for PMID: {} | {}", pmid, status);
         String pubId = null;
         if (pmid != null) {
             try {
@@ -65,7 +67,7 @@ public class SubmissionsController {
             }
         }
 
-        List<Submission> submissions = submissionService.getSubmissions(pubId);
+        List<Submission> submissions = submissionService.getSubmissions(pubId, status);
         log.info("Found {} submissions.", submissions.size());
         List<SubmissionDto> submissionDtos = new ArrayList<>();
         for (Submission submission : submissions) {

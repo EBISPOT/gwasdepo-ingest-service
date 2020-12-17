@@ -144,6 +144,55 @@ public class SubmissionsControllerTest extends IntegrationTest {
     }
 
     /**
+     * GET /v1/submissions
+     */
+    @Test
+    public void shouldGetSubmissionsByStatus() throws Exception {
+        Publication publication = publicationRepository.insert(TestUtil.publication());
+        Submission submission = new Submission(publication.getId(), SubmissionProvenanceType.PUBLICATION.name(),
+                new Provenance(DateTime.now(), user.getId()));
+        submission.setStudies(Arrays.asList(new String[]{study.getId()}));
+        submission.setNotes(Arrays.asList(new String[]{note.getId()}));
+        submission.setAssociations(Arrays.asList(new String[]{association.getId()}));
+        submission.setSamples(Arrays.asList(new String[]{sample.getId()}));
+        submission.setCompleted(true);
+        submission.setOverallStatus(Status.CURATION_COMPLETE.name());
+        submissionRepository.insert(submission);
+
+        String endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "?status=SUBMITTED";
+
+        String response = mockMvc.perform(get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<SubmissionDto> actual = mapper.readValue(response, new TypeReference<List<SubmissionDto>>() {
+        });
+        assertTrue(actual.isEmpty());
+
+
+        endpoint = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS + "?status=CURATION_COMPLETE";
+
+        response = mockMvc.perform(get(endpoint)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        actual = mapper.readValue(response, new TypeReference<List<SubmissionDto>>() {
+        });
+        assertEquals(1, actual.size());
+        assertEquals(publication.getPmid(), actual.get(0).getPublication().getPmid());
+        assertEquals(1, actual.get(0).getStudies().size());
+        assertEquals(1, actual.get(0).getAssociations().size());
+        assertEquals(1, actual.get(0).getSamples().size());
+        assertEquals(1, actual.get(0).getNotes().size());
+    }
+
+    /**
      * GET /v1/submission-envelopes
      */
     @Test
