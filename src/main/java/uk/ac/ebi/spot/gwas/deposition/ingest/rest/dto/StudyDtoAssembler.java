@@ -34,7 +34,8 @@ public class StudyDtoAssembler {
                 study.getCohortId(),
                 null,
                 null,
-                null);
+                null,
+                study.isAgreedToCc0());
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
@@ -62,7 +63,8 @@ public class StudyDtoAssembler {
                 study.getCohortId(),
                 associationDtos,
                 sampleDtos,
-                noteDtos);
+                noteDtos,
+                study.isAgreedToCc0());
     }
 
     public static Study disassemble(StudyDto studyDto) {
