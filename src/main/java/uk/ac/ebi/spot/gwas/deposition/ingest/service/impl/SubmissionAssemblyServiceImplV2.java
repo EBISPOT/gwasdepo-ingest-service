@@ -100,7 +100,8 @@ public class SubmissionAssemblyServiceImplV2 implements SubmissionAssemblyServic
                         submission.getAssociations().size(),
                         submission.getSamples().size(),
                         submission.getNotes().size()),
-                ProvenanceDtoAssembler.assemble(submission.getCreated(), userOpt.get()));
+                ProvenanceDtoAssembler.assemble(submission.getCreated(), userOpt.get()),
+                submission.isAgreedToCc0());
     }
 
     @Override
