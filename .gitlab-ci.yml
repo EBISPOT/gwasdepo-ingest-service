@@ -63,7 +63,7 @@ deploy-ingest-sandbox:
   environment:
     name: sandbox
   only:
-  - develop
+  - ingest-477-sandbox-migration
 
 deploy-ingest-sandbox-migration:
   image: dtzar/helm-kubectl:2.13.1
@@ -78,7 +78,7 @@ deploy-ingest-sandbox-migration:
   environment:
     name: sandbox-migration
   only:
-    - ingest-477-sandbox-migration
+    - develop
 
 deploy-fallback:
   image: dtzar/helm-kubectl:2.13.1
