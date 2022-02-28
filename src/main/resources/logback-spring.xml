@@ -2,7 +2,7 @@
 <configuration>
     <property scope="context" name="serviceName" value="ingest-service"/>
 
-    <springProfile name="dev">
+    <springProfile name="dev,local">
         <property resource="logging-dev.properties"/>
 
         <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
