@@ -1,0 +1,15 @@
+server:
+  port: 8082
+
+spring:
+  data:
+    mongodb:
+      uri: localhost:9780
+
+gwas-ingest-service:
+  db: deposition-backend-sandbox
+  service-environments: dev
+
+quartz:
+  scheduler:
+    dbName: gwas-deposition-dev

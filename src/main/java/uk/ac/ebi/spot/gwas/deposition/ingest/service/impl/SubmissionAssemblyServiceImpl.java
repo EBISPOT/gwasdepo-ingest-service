@@ -47,6 +47,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     @Autowired
     private NoteRepository noteRepository;
 
+    @Autowired
+    StudyDtoAssembler studyDtoAssembler;
+
     @Override
     public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
         List<String> pubIds = new ArrayList<>();
@@ -136,7 +139,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
         List<StudyDto> studyDtoList = new ArrayList<>();
         if (!submission.getStudies().isEmpty()) {
             List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
-            studyDtoList = studies.stream().map(StudyDtoAssembler::assemble).collect(Collectors.toList());
+            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
         }
 
         List<AssociationDto> associationDtos = new ArrayList<>();
