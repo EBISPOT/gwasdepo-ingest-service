@@ -74,7 +74,12 @@ public class StudyDtoAssembler {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .map(efoTraitAssemblyService::assembleDTO)
-                        .collect(Collectors.toList()) : null
+                        .collect(Collectors.toList()) : null,
+                null,
+                null,
+                study.getSumstatsFlag(),
+                study.getPooledFlag(),
+                study.getGxeFlag()
                 );
     }
 
@@ -107,7 +112,12 @@ public class StudyDtoAssembler {
                 noteDtos,
                 study.isAgreedToCc0()
                 ,null,
-                null
+                null,
+                null,
+                null,
+                study.getSumstatsFlag(),
+                study.getPooledFlag(),
+                study.getGxeFlag()
                 );
     }
 
