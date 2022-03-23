@@ -177,6 +177,8 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
                         submission.getSamples().size(),
                         submission.getNotes().size()),
                 ProvenanceDtoAssembler.assemble(submission.getCreated(), userOpt.get()),
-                submission.isAgreedToCc0());
+                submission.isAgreedToCc0(),
+                submission.getOpenTargetsFlag(),
+                submission.getUserRequestedFlag());
     }
 }
