@@ -4,12 +4,15 @@ server:
 spring:
   data:
     mongodb:
-      uri: localhost:9780
+      #uri: localhost:9780
+      uri: mongodb-hhvm-062.ebi.ac.uk:27017,mongodb-hxvm-063.ebi.ac.uk:27017/admin?replicaSet=gwasdepodevrs039
 
 gwas-ingest-service:
-  db: deposition-backend-sandbox
+  #db: deposition-backend-sandbox
+  db: gwasdepo
   service-environments: dev
 
 quartz:
   scheduler:
-    dbName: gwas-deposition-dev
+    #dbName: gwas-deposition-dev
+    dbName: gwasdepo
