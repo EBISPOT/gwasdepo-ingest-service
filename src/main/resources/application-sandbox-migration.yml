@@ -10,9 +10,11 @@ spring:
       uri: mongodb-hhvm-062.ebi.ac.uk:27017,mongodb-hxvm-063.ebi.ac.uk:27017/admin?replicaSet=gwasdepodevrs039
 
 gwas-ingest-service:
-  db: deposition-backend-sandbox
+  #db: deposition-backend-sandbox
+  db: gwasdepo
   service-environments: sandbox
 
 quartz:
   scheduler:
-    dbName: deposition-backend-sandbox
+    #dbName: deposition-backend-sandbox
+    dbName: gwasdepo
