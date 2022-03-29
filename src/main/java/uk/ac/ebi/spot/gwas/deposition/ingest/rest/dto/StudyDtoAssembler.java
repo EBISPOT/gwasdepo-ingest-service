@@ -75,8 +75,8 @@ public class StudyDtoAssembler {
                         .map(Optional::get)
                         .map(efoTraitAssemblyService::assembleDTO)
                         .collect(Collectors.toList()) : null,
-                null,
-                null,
+                study.getInitialSampleDescription(),
+                study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
                 study.getGxeFlag()
