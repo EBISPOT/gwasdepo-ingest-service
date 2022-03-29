@@ -21,7 +21,7 @@ public class MongoConfig {
     @Configuration
     @EnableMongoRepositories(basePackages = {"uk.ac.ebi.spot.gwas.deposition.ingest.repository"})
     @EnableTransactionManagement
-    @Profile({"dev", "test"})
+    @Profile({"dev", "test","local"})
     public static class MongoConfigDev extends AbstractMongoConfiguration {
 
         @Autowired
@@ -40,7 +40,7 @@ public class MongoConfig {
             return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());
         }
 
-        @Override
+        /*@Override
         public MongoClient mongoClient() {
             String mongoUri = systemConfigProperties.getMongoUri();
             String[] addresses = mongoUri.split(",");
@@ -50,13 +50,19 @@ public class MongoConfig {
                 servers.add(new ServerAddress(split[0].trim(), Integer.parseInt(split[1].trim())));
             }
             return new MongoClient(servers);
+        }*/
+
+        @Override
+        public MongoClient mongoClient() {
+            String mongoUri = systemConfigProperties.getMongoUri();
+            return new MongoClient(new MongoClientURI("mongodb://" + mongoUri));
         }
     }
 
     @Configuration
     @EnableMongoRepositories(basePackages = {"uk.ac.ebi.spot.gwas.deposition.ingest.repository"})
     @EnableTransactionManagement
-    @Profile({"sandbox"})
+    @Profile({"sandbox","sandbox-migration"})
     public static class MongoConfigSandbox extends AbstractMongoConfiguration {
 
         @Autowired
