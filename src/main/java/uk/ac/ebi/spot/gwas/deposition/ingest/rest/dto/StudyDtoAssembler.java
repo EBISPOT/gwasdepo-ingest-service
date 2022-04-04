@@ -69,7 +69,7 @@ public class StudyDtoAssembler {
                 null,
                 null,
                 study.isAgreedToCc0(),
-                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).map(Optional::get).map(diseaseTraitAssemblyService::assembleDTO).orElse(null) ,
+                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssemblyService::assembleDTO).orElse(null) ,
                 study.getEfoTraits() != null ? study.getEfoTraits().stream().map(efoTraitRepository::findById)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
