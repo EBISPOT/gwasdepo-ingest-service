@@ -272,7 +272,9 @@ public class SubmissionsControllerTest extends IntegrationTest {
                 actual.getDateSubmitted(),
                 actual.getMetadata(),
                 actual.getCreated(),
-                actual.isAgreedToCc0());
+                actual.isAgreedToCc0(),
+                actual.getOpenTargetsFlag(),
+                actual.getUserRequestedFlag());
 
         response = mockMvc.perform(put(endpoint)
                 .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(updated)))
