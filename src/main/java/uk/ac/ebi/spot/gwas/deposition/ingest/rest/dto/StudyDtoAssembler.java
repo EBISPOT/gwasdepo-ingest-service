@@ -75,6 +75,11 @@ public class StudyDtoAssembler {
                         .map(Optional::get)
                         .map(efoTraitAssemblyService::assembleDTO)
                         .collect(Collectors.toList()) : null,
+                study.getBackgroundEfoTraits() != null ? study.getBackgroundEfoTraits().stream().map(efoTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(efoTraitAssemblyService::assembleDTO)
+                        .collect(Collectors.toList()) : null,
                 study.getInitialSampleDescription(),
                 study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
@@ -112,6 +117,7 @@ public class StudyDtoAssembler {
                 noteDtos,
                 study.isAgreedToCc0()
                 ,null,
+                null,
                 null,
                 null,
                 null,
