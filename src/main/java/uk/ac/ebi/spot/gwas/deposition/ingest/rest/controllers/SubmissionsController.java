@@ -3,6 +3,15 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +21,10 @@ import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.impl.SubmissionAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.util.BackendUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,7 +37,7 @@ public class SubmissionsController {
     private SubmissionService submissionService;
 
     @Autowired
-    private SubmissionAssemblyService submissionAssemblyService;
+    private SubmissionAssembler submissionAssembler;
 
     @Autowired
     private PublicationService publicationService;
@@ -39,11 +48,11 @@ public class SubmissionsController {
     @GetMapping(value = "/{submissionId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public SubmissionDto getSubmission(@PathVariable String submissionId) {
+    public Resource<SubmissionDto> getSubmission(@PathVariable String submissionId) {
         log.info("Request to retrieve submission: {}", submissionId);
         Submission submission = submissionService.getSubmission(submissionId);
         log.info("Returning submission: {}", submission.getId());
-        return submissionAssemblyService.assemble(submission);
+        return submissionAssembler.toResource(submission);
     }
 
     /**
@@ -51,10 +60,10 @@ public class SubmissionsController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public List<SubmissionDto> getSubmissions(@RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false)
-                                                      String pmid,
-                                              @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false)
-                                                      String status) {
+    public PagedResources<SubmissionDto> getSubmissions(PagedResourcesAssembler assembler,
+                                                        @RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false) String pmid,
+                                                        @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false) String status,
+                                                        @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         log.info("Request to retrieve all submissions - including for PMID: {} | {}", pmid, status);
         String pubId = null;
         if (pmid != null) {
@@ -67,13 +76,13 @@ public class SubmissionsController {
             }
         }
 
-        List<Submission> submissions = submissionService.getSubmissions(pubId, status);
-        log.info("Found {} submissions.", submissions.size());
-        List<SubmissionDto> submissionDtos = new ArrayList<>();
-        for (Submission submission : submissions) {
-            submissionDtos.add(submissionAssemblyService.assemble(submission));
-        }
-        return submissionDtos;
+        Page<Submission> submissions = submissionService.getSubmissions(pubId, status, pageable);
+
+
+        final ControllerLinkBuilder lb = ControllerLinkBuilder.linkTo(ControllerLinkBuilder
+                .methodOn(SubmissionsController.class).getSubmissions(assembler, "", "", pageable));
+
+        return assembler.toResource(submissions, submissionAssembler, new Link(BackendUtil.underBasePath(lb, "").toUri().toString()));
     }
 
     /**
@@ -88,6 +97,6 @@ public class SubmissionsController {
         log.info("Request to update status for submission: {}", submissionId);
         Submission submission = submissionService.updateSubmission(submissionId, submissionDto.getStatus());
         log.info("Returning submission: {}", submission.getId());
-        return submissionAssemblyService.assemble(submission);
+        return submissionAssembler.assemble(submission);
     }
 }

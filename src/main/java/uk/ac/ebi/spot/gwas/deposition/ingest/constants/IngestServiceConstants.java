@@ -23,4 +23,6 @@ public class IngestServiceConstants {
     public static final String API_DISEASE_TRAITS = "/reported-traits";
 
     public static final String API_EFO_TRAITS = "/efo-traits";
+
+    public static final String LINKS_PARENT = "parent";
 }
