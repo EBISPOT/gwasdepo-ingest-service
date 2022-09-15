@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.PublicationIngestStatus;
+import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.PublicationIngestEntry;
 import uk.ac.ebi.spot.gwas.deposition.domain.SSTemplateEntryPlaceholder;
+import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.exception.PublicationAlreadyExistsException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
@@ -135,4 +137,26 @@ public class PublicationServiceImpl implements PublicationService {
             publicationRepository.save(existing);
         }
     }
+
+    @Override
+    public List<Publication> getByIdIn(List<String> pubIds) {
+        return publicationRepository.findByIdIn(pubIds);
+    }
+
+    @Override
+    public Optional<Publication> getById(String publicationId) {
+        return publicationRepository.findById(publicationId);
+    }
+
+    @Override
+    public Publication getPublicationBySubmission(Submission submission) {
+        Optional<Publication> publicationOptional = this.getById(submission.getPublicationId());
+        if (!publicationOptional.isPresent()) {
+            log.error("Unable to find publication: {}", submission.getPublicationId());
+            throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
+        }
+        return publicationOptional.get();
+    }
+
+
 }
