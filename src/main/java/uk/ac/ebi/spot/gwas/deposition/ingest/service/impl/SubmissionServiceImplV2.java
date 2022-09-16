@@ -127,7 +127,7 @@ public class SubmissionServiceImplV2 implements SubmissionServiceV2 {
                 noteDtos = notes.stream().map(NoteDtoAssembler::assemble).collect(Collectors.toList());
             }
 
-            result.add(StudyDtoAssembler.assemble(study, associationDtos, sampleDtos, noteDtos));
+            result.add(StudyAssembler.assemble(study, associationDtos, sampleDtos, noteDtos));
         }
 
         return result;

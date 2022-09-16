@@ -43,8 +43,7 @@ public class SubmissionsController {
     /**
      * GET /v1/submissions/{submissionId}
      */
-    @GetMapping(value = "/{submissionId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{submissionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public Resource<SubmissionDto> getSubmission(@PathVariable String submissionId) {
         log.info("Request to retrieve submission: {}", submissionId);
@@ -58,10 +57,10 @@ public class SubmissionsController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public PagedResources<SubmissionDto> getSubmissions(PagedResourcesAssembler assembler,
-                                                        @RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false) String pmid,
-                                                        @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false) String status,
-                                                        @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public PagedResources<Resource<SubmissionDto>> getSubmissions(PagedResourcesAssembler<Submission> assembler,
+                                                                  @RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false) String pmid,
+                                                                  @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false) String status,
+                                                                  @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         log.info("Request to retrieve all submissions - including for PMID: {} | {}", pmid, status);
         log.info("Request to retrieve submissions of page: {}, size: {} ", pageable.getPageNumber(), pageable.getPageSize());
         String pubId = null;
@@ -74,28 +73,20 @@ public class SubmissionsController {
                 log.error("Error when retrieving publication [{}]: {}", pmid, e.getMessage(), e);
             }
         }
-
         Page<Submission> submissions = submissionService.getSubmissions(pubId, status, pageable);
-
-
-        final ControllerLinkBuilder lb = ControllerLinkBuilder.linkTo(ControllerLinkBuilder
-                .methodOn(SubmissionsController.class).getSubmissions(assembler, "", "", pageable));
-
-        return assembler.toResource(submissions, submissionAssembler, new Link(BackendUtil.underBasePath(lb, "").toUri().toString()));
+        return assembler.toResource(submissions, submissionAssembler);
     }
 
     /**
      * PUT /v1/submissions/{submissionId}
      */
-    @PutMapping(value = "/{submissionId}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{submissionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public SubmissionDto updateSubmission(@PathVariable String submissionId,
-                                          @RequestBody SubmissionDto submissionDto) {
+    public Resource<SubmissionDto> updateSubmission(@PathVariable String submissionId,
+                                                    @RequestBody SubmissionDto submissionDto) {
         log.info("Request to update status for submission: {}", submissionId);
         Submission submission = submissionService.updateSubmission(submissionId, submissionDto.getStatus());
         log.info("Returning submission: {}", submission.getId());
-        return submissionAssembler.assemble(submission);
+        return submissionAssembler.toResource(submission);
     }
 }

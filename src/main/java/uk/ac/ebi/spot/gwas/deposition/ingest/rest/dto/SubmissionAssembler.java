@@ -47,19 +47,10 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
     private UserRepository userRepository;
 
     @Autowired
-    private StudyRepository studyRepository;
-
-    @Autowired
-    private AssociationRepository associationRepository;
-
-    @Autowired
-    private SampleRepository sampleRepository;
-
-    @Autowired
     private NoteRepository noteRepository;
 
     @Autowired
-    StudyDtoAssembler studyDtoAssembler;
+    StudyAssembler studyDtoAssembler;
 
     public List<SubmissionEnvelopeDto> assembleEnvelopes(Page<Submission> submissions) {
         List<String> pubIds = new ArrayList<>();
@@ -111,69 +102,6 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
             ));
         }
         return result;
-    }
-
-    public SubmissionDto assemble(Submission submission) {
-        log.info("Assembling submission: {}", submission.getId());
-        Publication publication = null;
-        BodyOfWork bodyOfWork = null;
-        if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
-            publication = publicationService.getPublicationBySubmission(submission);
-        } else {
-            if (!submission.getBodyOfWorks().isEmpty()) {
-                bodyOfWork = bodyOfWorkService.getBodyOfWorkBySubmission(submission);
-                if (submission.getPublicationId() != null) {
-                    publication = publicationService.getPublicationBySubmission(submission);
-                }
-            }
-        }
-
-        Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
-
-        List<StudyDto> studyDtoList = new ArrayList<>();
-        if (!submission.getStudies().isEmpty()) {
-            List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
-            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
-        List<AssociationDto> associationDtos = new ArrayList<>();
-        if (!submission.getAssociations().isEmpty()) {
-            List<Association> associations = associationRepository.findByIdIn(submission.getAssociations());
-            associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
-        List<SampleDto> sampleDtos = new ArrayList<>();
-        if (!submission.getSamples().isEmpty()) {
-            List<Sample> samples = sampleRepository.findByIdIn(submission.getSamples());
-            sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
-        List<NoteDto> noteDtos = new ArrayList<>();
-        if (!submission.getNotes().isEmpty()) {
-            List<Note> notes = noteRepository.findByIdIn(submission.getNotes());
-            noteDtos = notes.stream().map(NoteDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
-        return new SubmissionDto(submission.getId(),
-                publication != null ? PublicationDtoAssembler.assemble(publication) : null,
-                bodyOfWork != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWork) : null,
-                submission.getProvenanceType(),
-                submission.getOverallStatus(),
-                submission.getGlobusFolderId(),
-                submission.getGlobusOriginId(),
-                studyDtoList,
-                associationDtos,
-                sampleDtos,
-                noteDtos,
-                submission.getDateSubmitted(),
-                new MetadataDto(submission.getStudies().size(),
-                        submission.getAssociations().size(),
-                        submission.getSamples().size(),
-                        submission.getNotes().size()),
-                ProvenanceDtoAssembler.assemble(submission.getCreated(), userOpt.get()),
-                submission.isAgreedToCc0(),
-                submission.getOpenTargetsFlag(),
-                submission.getUserRequestedFlag());
     }
 
     @Override
@@ -249,6 +177,7 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
 
         resource.add(linkTo(methodOn(SubmissionsController.class).getSubmission(submission.getId())).withSelfRel());
 
+        resource.add(linkTo(StudiesController.class).slash(submission.getId()).slash("studies").withRel("studies"));
 
         return resource;
     }
