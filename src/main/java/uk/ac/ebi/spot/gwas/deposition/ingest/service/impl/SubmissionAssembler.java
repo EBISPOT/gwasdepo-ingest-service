@@ -115,16 +115,6 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
         return result;
     }
 
-    
-    public List<SubmissionDto> assemble(Page<Submission> submissions){
-        List<SubmissionDto> submissionDtos = new ArrayList<>();
-        submissions.forEach(submission -> {
-            submissionDtos.add(this.assemble(submission));
-        });
-        return submissionDtos;
-    }
-
-    
     public SubmissionDto assemble(Submission submission) {
         log.info("Assembling submission: {}", submission.getId());
         Publication publication = null;
@@ -259,12 +249,8 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
         final ControllerLinkBuilder lb = ControllerLinkBuilder.linkTo(
                 ControllerLinkBuilder.methodOn(SubmissionsController.class).getSubmission(submission.getId()));
 
-        log.info("Assembling submission: {} ferrrrrr", submission.getId());
-
         Resource<SubmissionDto> resource = new Resource<>(submissionDto);
         resource.add(BackendUtil.underBasePath(lb, "").withRel(IngestServiceConstants.LINKS_PARENT));
-
-        log.info("Assembling submission: {} ferrrrrr", submission.getId());
         log.info("EfoTraitDtoAssembler Resource ->" + resource);
 
         return resource;

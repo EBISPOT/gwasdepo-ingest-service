@@ -65,6 +65,7 @@ public class SubmissionsController {
                                                         @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false) String status,
                                                         @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         log.info("Request to retrieve all submissions - including for PMID: {} | {}", pmid, status);
+        log.info("Request to retrieve submissions of page: {}, size: {} ", pageable.getPageNumber(), pageable.getPageSize());
         String pubId = null;
         if (pmid != null) {
             try {

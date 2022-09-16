@@ -39,11 +39,12 @@ public class EnvelopeSubmissionsController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public List<SubmissionEnvelopeDto> getSubmissions(@SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public List<SubmissionEnvelopeDto> getSubmissions() {
         log.info("Request to retrieve all submissions.");
-        Page<Submission> submissions = submissionService.getSubmissions(null, null, pageable);
+        Pageable wholePage = Pageable.unpaged();
+        Page<Submission> submissions = submissionService.getSubmissions(null, null, wholePage);
         log.info("Found {} submissions.", submissions.getTotalElements());
-        return null;
+        return submissionAssembler.assembleEnvelopes(submissions);
     }
 
 }
