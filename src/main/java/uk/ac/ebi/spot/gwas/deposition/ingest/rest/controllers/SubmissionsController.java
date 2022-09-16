@@ -22,10 +22,8 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.impl.SubmissionAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.SubmissionAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.util.BackendUtil;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS)

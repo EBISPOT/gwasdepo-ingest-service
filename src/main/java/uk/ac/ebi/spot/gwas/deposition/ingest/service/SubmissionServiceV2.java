@@ -8,7 +8,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 
 import java.util.List;
 
-public interface SubmissionAssemblyServiceV2 {
+public interface SubmissionServiceV2 {
 
     SubmissionDto assemble(Submission submission);
 

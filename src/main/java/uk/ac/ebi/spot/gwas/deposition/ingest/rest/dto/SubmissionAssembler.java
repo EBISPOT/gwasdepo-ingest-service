@@ -1,15 +1,12 @@
-package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
+package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
@@ -20,16 +17,17 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.MetadataDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
-import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.util.BackendUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Component
 public class SubmissionAssembler implements ResourceAssembler<Submission, Resource<SubmissionDto>> {
@@ -199,22 +197,22 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
 
         List<StudyDto> studyDtoList = new ArrayList<>();
-        if (!submission.getStudies().isEmpty()) {
-            List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
-            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
-        }
+//        if (!submission.getStudies().isEmpty()) {
+//            List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
+//            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
+//        }
 
         List<AssociationDto> associationDtos = new ArrayList<>();
-        if (!submission.getAssociations().isEmpty()) {
-            List<Association> associations = associationRepository.findByIdIn(submission.getAssociations());
-            associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
-        }
+//        if (!submission.getAssociations().isEmpty()) {
+//            List<Association> associations = associationRepository.findByIdIn(submission.getAssociations());
+//            associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
+//        }
 
         List<SampleDto> sampleDtos = new ArrayList<>();
-        if (!submission.getSamples().isEmpty()) {
-            List<Sample> samples = sampleRepository.findByIdIn(submission.getSamples());
-            sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
-        }
+//        if (!submission.getSamples().isEmpty()) {
+//            List<Sample> samples = sampleRepository.findByIdIn(submission.getSamples());
+//            sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
+//        }
 
         List<NoteDto> noteDtos = new ArrayList<>();
         if (!submission.getNotes().isEmpty()) {
@@ -246,12 +244,11 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
                 submission.getUserRequestedFlag());
 
 
-        final ControllerLinkBuilder lb = ControllerLinkBuilder.linkTo(
-                ControllerLinkBuilder.methodOn(SubmissionsController.class).getSubmission(submission.getId()));
-
         Resource<SubmissionDto> resource = new Resource<>(submissionDto);
-        resource.add(BackendUtil.underBasePath(lb, "").withRel(IngestServiceConstants.LINKS_PARENT));
         log.info("EfoTraitDtoAssembler Resource ->" + resource);
+
+        resource.add(linkTo(methodOn(SubmissionsController.class).getSubmission(submission.getId())).withSelfRel());
+
 
         return resource;
     }

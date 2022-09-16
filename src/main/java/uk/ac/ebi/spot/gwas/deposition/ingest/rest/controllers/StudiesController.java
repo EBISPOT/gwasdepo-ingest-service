@@ -12,7 +12,7 @@ import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyServiceV2;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionServiceV2;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class StudiesController {
     private SubmissionService submissionService;
 
     @Autowired
-    private SubmissionAssemblyServiceV2 submissionAssemblyServiceV2;
+    private SubmissionServiceV2 submissionAssemblyServiceV2;
 
     /**
      * GET /v1/studies?submissionId=<submissionId>&page=<page>

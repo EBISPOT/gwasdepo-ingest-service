@@ -15,15 +15,11 @@ import java.util.List;
 @Service
 public class DiseaseTraitServiceImpl implements DiseaseTraitService {
 
-    private static final Logger log = LoggerFactory.getLogger(DiseaseTraitServiceImpl.class);
-
     @Autowired
     DiseaseTraitRepository diseaseTraitRepository;
-
 
     public List<DiseaseTrait> getDiseaseTraits() {
         return diseaseTraitRepository.findAll();
     }
-
 
 }

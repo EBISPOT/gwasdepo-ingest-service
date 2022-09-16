@@ -17,7 +17,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.*;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyServiceV2;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionServiceV2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class SubmissionAssemblyServiceImplV2 implements SubmissionAssemblyServiceV2 {
+public class SubmissionServiceImplV2 implements SubmissionServiceV2 {
 
-    private static final Logger log = LoggerFactory.getLogger(SubmissionAssemblyServiceV2.class);
+    private static final Logger log = LoggerFactory.getLogger(SubmissionServiceV2.class);
 
     @Autowired
     private PublicationRepository publicationRepository;
