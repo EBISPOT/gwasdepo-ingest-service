@@ -12,5 +12,4 @@ public interface SubmissionServiceV2 {
 
     SubmissionDto assemble(Submission submission);
 
-    List<StudyDto> assembleStudies(String id, Pageable pageable);
 }

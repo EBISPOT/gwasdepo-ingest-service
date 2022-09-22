@@ -18,6 +18,8 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.AssociationController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SamplesController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
@@ -125,22 +127,8 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
 
         List<StudyDto> studyDtoList = new ArrayList<>();
-//        if (!submission.getStudies().isEmpty()) {
-//            List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
-//            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
-//        }
-
         List<AssociationDto> associationDtos = new ArrayList<>();
-//        if (!submission.getAssociations().isEmpty()) {
-//            List<Association> associations = associationRepository.findByIdIn(submission.getAssociations());
-//            associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
-//        }
-
         List<SampleDto> sampleDtos = new ArrayList<>();
-//        if (!submission.getSamples().isEmpty()) {
-//            List<Sample> samples = sampleRepository.findByIdIn(submission.getSamples());
-//            sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
-//        }
 
         List<NoteDto> noteDtos = new ArrayList<>();
         if (!submission.getNotes().isEmpty()) {
@@ -173,11 +161,11 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
 
 
         Resource<SubmissionDto> resource = new Resource<>(submissionDto);
-        log.info("EfoTraitDtoAssembler Resource ->" + resource);
 
         resource.add(linkTo(methodOn(SubmissionsController.class).getSubmission(submission.getId())).withSelfRel());
-
         resource.add(linkTo(StudiesController.class).slash(submission.getId()).slash("studies").withRel("studies"));
+        resource.add(linkTo(AssociationController.class).slash(submission.getId()).slash("associations").withRel("associations"));
+        resource.add(linkTo(SamplesController.class).slash(submission.getId()).slash("samples").withRel("samples"));
 
         return resource;
     }

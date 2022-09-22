@@ -106,30 +106,30 @@ public class SubmissionServiceImplV2 implements SubmissionServiceV2 {
                 submission.getUserRequestedFlag());
     }
 
-    @Override
-    public List<StudyDto> assembleStudies(String submissionId, Pageable pageable) {
-        log.info("Assembling studies for submission: {} - {}", submissionId, pageable.getPageNumber());
-        List<StudyDto> result = new ArrayList<>();
-        Page<Study> studiesPage = studyRepository.findBySubmissionId(submissionId, pageable);
-        for (Study study : studiesPage.getContent()) {
-            List<AssociationDto> associationDtos = new ArrayList<>();
-            List<SampleDto> sampleDtos = new ArrayList<>();
-            List<NoteDto> noteDtos = new ArrayList<>();
-
-            if (study.getStudyTag() != null) {
-                List<Association> associations = associationRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
-                associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
-
-                List<Sample> samples = sampleRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
-                sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
-
-                List<Note> notes = noteRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
-                noteDtos = notes.stream().map(NoteDtoAssembler::assemble).collect(Collectors.toList());
-            }
-
-            result.add(StudyAssembler.assemble(study, associationDtos, sampleDtos, noteDtos));
-        }
-
-        return result;
-    }
+//    @Override
+//    public List<StudyDto> assembleStudies(String submissionId, Pageable pageable) {
+//        log.info("Assembling studies for submission: {} - {}", submissionId, pageable.getPageNumber());
+//        List<StudyDto> result = new ArrayList<>();
+//        Page<Study> studiesPage = studyRepository.findBySubmissionId(submissionId, pageable);
+//        for (Study study : studiesPage.getContent()) {
+//            List<AssociationDto> associationDtos = new ArrayList<>();
+//            List<SampleDto> sampleDtos = new ArrayList<>();
+//            List<NoteDto> noteDtos = new ArrayList<>();
+//
+//            if (study.getStudyTag() != null) {
+//                List<Association> associations = associationRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
+//                associationDtos = associations.stream().map(AssociationAssembler::assemble).collect(Collectors.toList());
+//
+//                List<Sample> samples = sampleRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
+//                sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
+//
+//                List<Note> notes = noteRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), submissionId);
+//                noteDtos = notes.stream().map(NoteDtoAssembler::assemble).collect(Collectors.toList());
+//            }
+//
+//            result.add(StudyAssembler.assemble(study, associationDtos, sampleDtos, noteDtos));
+//        }
+//
+//        return result;
+//    }
 }
