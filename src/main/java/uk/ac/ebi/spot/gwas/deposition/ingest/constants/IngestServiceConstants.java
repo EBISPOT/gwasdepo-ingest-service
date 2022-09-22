@@ -8,6 +8,10 @@ public class IngestServiceConstants {
 
     public static final String API_STUDIES = "/studies";
 
+    public static final String API_ASSOCIATIONS = "/associations";
+
+    public static final String API_SAMPLES = "/samples";
+
     public static final String API_PROVENANCE = "/provenance";
 
     public static final String API_SUBMISSION_ENVELOPES = "/submission-envelopes";
