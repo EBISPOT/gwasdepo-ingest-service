@@ -1,13 +1,21 @@
 package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 
 
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.stereotype.Component;
 import uk.ac.ebi.spot.gwas.deposition.domain.Association;
+import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 
-public class AssociationDtoAssembler {
+@Component
+public class AssociationAssembler implements ResourceAssembler<Association, Resource<AssociationDto>> {
 
-    public static AssociationDto assemble(Association association) {
-        return new AssociationDto(association.getStudyTag(),
+    @Override
+    public Resource<AssociationDto> toResource(Association association) {
+
+        AssociationDto associationDto = new AssociationDto(association.getStudyTag(),
                 association.getHaplotypeId(),
                 association.getVariantId(),
                 association.getPvalue(),
@@ -22,6 +30,8 @@ public class AssociationDtoAssembler {
                 association.getCiLower(),
                 association.getCiUpper(),
                 association.getStandardError());
+
+        return new Resource<>(associationDto);
     }
 
     public static Association disassemble(AssociationDto associationDto) {
@@ -45,4 +55,5 @@ public class AssociationDtoAssembler {
 
         return association;
     }
+
 }
