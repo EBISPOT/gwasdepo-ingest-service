@@ -18,5 +18,7 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
 
     Page<Submission> findByOverallStatusAndArchived(String status, boolean archived, Pageable pageable);
 
+    Page<Submission> findByOverallStatusAndArchivedAndPublicationIdIsNotNull(String status, boolean archived, Pageable pageable);
+
     List<Submission> findByBodyOfWorksContainsAndArchived(String bowId, boolean archived);
 }

@@ -2,10 +2,12 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.util;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +26,8 @@ public class SubmissionsUtil {
 
             result.add(submission);
         }
-        return new PageImpl<>(result);
+
+        return new PageImpl<>(result, submissions.getPageable(), submissions.getTotalElements());
     }
 
     public static Page<Submission> filterForReadyToImport(Page<Submission> submissions) {
@@ -35,6 +38,6 @@ public class SubmissionsUtil {
             }
             result.add(submission);
         }
-        return new PageImpl<>(result);
+        return new PageImpl<>(result, submissions.getPageable(), submissions.getTotalElements());
     }
 }

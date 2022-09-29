@@ -68,7 +68,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 submissions = SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false, pageable));
             } else {
                 if (status.equalsIgnoreCase("READY_TO_IMPORT")) {
-                    submissions = SubmissionsUtil.filterForReadyToImport(submissionRepository.findByOverallStatusAndArchived(Status.SUBMITTED.name(), false, pageable));
+                    submissions = submissionRepository.findByOverallStatusAndArchivedAndPublicationIdIsNotNull(Status.SUBMITTED.name(), false, pageable);
                 } else {
                     submissions = submissionRepository.findByOverallStatusAndArchived(status, false, pageable);
                 }
