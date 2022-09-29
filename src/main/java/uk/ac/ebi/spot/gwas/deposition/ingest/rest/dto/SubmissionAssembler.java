@@ -1,9 +1,12 @@
-package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
+package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.stereotype.Component;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
@@ -13,45 +16,45 @@ import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.MetadataDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
-import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
+import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.*;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.AssociationController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SamplesController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
-public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService {
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-    private static final Logger log = LoggerFactory.getLogger(SubmissionAssemblyService.class);
+@Component
+public class SubmissionAssembler implements ResourceAssembler<Submission, Resource<SubmissionDto>> {
+
+    private static final Logger log = LoggerFactory.getLogger(SubmissionAssembler.class);
 
     @Autowired
-    private PublicationRepository publicationRepository;
+    IngestServiceConfig ingestServiceConfig;
 
     @Autowired
-    private BodyOfWorkRepository bodyOfWorkRepository;
+    private PublicationService publicationService;
+
+    @Autowired
+    private BodyOfWorkService bodyOfWorkService;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private StudyRepository studyRepository;
-
-    @Autowired
-    private AssociationRepository associationRepository;
-
-    @Autowired
-    private SampleRepository sampleRepository;
-
-    @Autowired
     private NoteRepository noteRepository;
 
     @Autowired
-    StudyDtoAssembler studyDtoAssembler;
+    StudyAssembler studyDtoAssembler;
 
-    @Override
-    public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
+    public List<SubmissionEnvelopeDto> assembleEnvelopes(Page<Submission> submissions) {
         List<String> pubIds = new ArrayList<>();
         List<String> bodyOfWorkIds = new ArrayList<>();
         Map<String, User> userMap = new HashMap<>();
@@ -67,12 +70,12 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
             userMap.put(submission.getCreated().getUserId(), null);
         }
 
-        List<Publication> publications = publicationRepository.findByIdIn(pubIds);
+        List<Publication> publications = publicationService.getByIdIn(pubIds);
         Map<String, Publication> publicationMap = new HashMap<>();
         for (Publication publication : publications) {
             publicationMap.put(publication.getId(), publication);
         }
-        List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByBowIdInAndArchived(bodyOfWorkIds, false);
+        List<BodyOfWork> bodyOfWorks = bodyOfWorkService.getByBowIdInAndArchived(bodyOfWorkIds, false);
         Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
         for (BodyOfWork bodyOfWork : bodyOfWorks) {
             bodyOfWorksMap.put(bodyOfWork.getBowId(), bodyOfWork);
@@ -104,55 +107,28 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     }
 
     @Override
-    public SubmissionDto assemble(Submission submission) {
+    public Resource<SubmissionDto> toResource(Submission submission) {
         log.info("Assembling submission: {}", submission.getId());
         Publication publication = null;
         BodyOfWork bodyOfWork = null;
         if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
-            Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
-            if (!publicationOptional.isPresent()) {
-                log.error("Unable to find publication: {}", submission.getPublicationId());
-                throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
-            }
-            publication = publicationOptional.get();
+            publication = publicationService.getPublicationBySubmission(submission);
         } else {
             if (!submission.getBodyOfWorks().isEmpty()) {
-                Optional<BodyOfWork> bodyOfWorkOptional = bodyOfWorkRepository.findByBowIdAndArchived(submission.getBodyOfWorks().get(0), false);
-                if (!bodyOfWorkOptional.isPresent()) {
-                    log.error("Unable to find body of work: {}", submission.getBodyOfWorks());
-                    throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));
-                }
-                bodyOfWork = bodyOfWorkOptional.get();
+                bodyOfWork = bodyOfWorkService.getBodyOfWorkBySubmission(submission);
                 if (submission.getPublicationId() != null) {
-                    Optional<Publication> publicationOptional = publicationRepository.findById(submission.getPublicationId());
-                    if (!publicationOptional.isPresent()) {
-                        log.error("Unable to find publication: {}", submission.getPublicationId());
-                        throw new EntityNotFoundException("Unable to find publication: " + submission.getPublicationId());
-                    }
-                    publication = publicationOptional.get();
+                    publication = publicationService.getPublicationBySubmission(submission);
                 }
             }
         }
+
+        log.info("Assembling submission: {}", submission.getId());
 
         Optional<User> userOpt = userRepository.findById(submission.getCreated().getUserId());
 
         List<StudyDto> studyDtoList = new ArrayList<>();
-        if (!submission.getStudies().isEmpty()) {
-            List<Study> studies = studyRepository.findByIdIn(submission.getStudies());
-            studyDtoList = studies.stream().map(studyDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
         List<AssociationDto> associationDtos = new ArrayList<>();
-        if (!submission.getAssociations().isEmpty()) {
-            List<Association> associations = associationRepository.findByIdIn(submission.getAssociations());
-            associationDtos = associations.stream().map(AssociationDtoAssembler::assemble).collect(Collectors.toList());
-        }
-
         List<SampleDto> sampleDtos = new ArrayList<>();
-        if (!submission.getSamples().isEmpty()) {
-            List<Sample> samples = sampleRepository.findByIdIn(submission.getSamples());
-            sampleDtos = samples.stream().map(SampleDtoAssembler::assemble).collect(Collectors.toList());
-        }
 
         List<NoteDto> noteDtos = new ArrayList<>();
         if (!submission.getNotes().isEmpty()) {
@@ -160,7 +136,9 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
             noteDtos = notes.stream().map(NoteDtoAssembler::assemble).collect(Collectors.toList());
         }
 
-        return new SubmissionDto(submission.getId(),
+        log.info("Assembling submission: {}", submission.getId());
+
+        SubmissionDto submissionDto = new SubmissionDto(submission.getId(),
                 publication != null ? PublicationDtoAssembler.assemble(publication) : null,
                 bodyOfWork != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWork) : null,
                 submission.getProvenanceType(),
@@ -180,5 +158,15 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
                 submission.isAgreedToCc0(),
                 submission.getOpenTargetsFlag(),
                 submission.getUserRequestedFlag());
+
+
+        Resource<SubmissionDto> resource = new Resource<>(submissionDto);
+
+        resource.add(linkTo(methodOn(SubmissionsController.class).getSubmission(submission.getId())).withSelfRel());
+        resource.add(linkTo(StudiesController.class).slash(submission.getId()).slash("studies").withRel("studies"));
+        resource.add(linkTo(AssociationController.class).slash(submission.getId()).slash("associations").withRel("associations"));
+        resource.add(linkTo(SamplesController.class).slash(submission.getId()).slash("samples").withRel("samples"));
+
+        return resource;
     }
 }

@@ -3,33 +3,37 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
+import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.DiseaseTraitRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.EfoTraitRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 @Component
-public class StudyDtoAssembler {
+public class StudyAssembler implements ResourceAssembler<Study, Resource<StudyDto>> {
 
-    private static final Logger log = LoggerFactory.getLogger(StudyDtoAssembler.class);
-
-    @Autowired
-    DiseaseTraitAssemblyService diseaseTraitAssemblyService;
+    private static final Logger log = LoggerFactory.getLogger(StudyAssembler.class);
 
     @Autowired
-    EFOTraitAssemblyService efoTraitAssemblyService;
+    DiseaseTraitAssembler diseaseTraitAssembler;
+
+    @Autowired
+    EFOTraitAssembler efoTraitAssembler;
 
     @Autowired
     DiseaseTraitRepository diseaseTraitRepository;
@@ -37,13 +41,12 @@ public class StudyDtoAssembler {
     @Autowired
     EfoTraitRepository efoTraitRepository;
 
-    public  StudyDto assemble(Study study) {
+
+    @Override
+    public Resource<StudyDto> toResource(Study study) {
 
         log.info("Study Accession Id {}",study.getAccession());
-        //DiseaseTrait diseaseTrait = diseaseTraitOptional.get();
-
-
-        return new StudyDto(study.getStudyTag(),
+        StudyDto studyDto = new StudyDto(study.getStudyTag(),
                 study.getId(),
                 study.getAccession(),
                 study.getGenotypingTechnology(),
@@ -69,23 +72,24 @@ public class StudyDtoAssembler {
                 null,
                 null,
                 study.isAgreedToCc0(),
-                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssemblyService::assembleDTO).orElse(null) ,
+                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssembler::assembleDTO).orElse(null) ,
                 study.getEfoTraits() != null ? study.getEfoTraits().stream().map(efoTraitRepository::findById)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .map(efoTraitAssemblyService::assembleDTO)
+                        .map(efoTraitAssembler::assembleDTO)
                         .collect(Collectors.toList()) : null,
                 study.getBackgroundEfoTraits() != null ? study.getBackgroundEfoTraits().stream().map(efoTraitRepository::findById)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .map(efoTraitAssemblyService::assembleDTO)
+                        .map(efoTraitAssembler::assembleDTO)
                         .collect(Collectors.toList()) : null,
                 study.getInitialSampleDescription(),
                 study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
-                );
+                study.getGxeFlag());
+
+        return new Resource<>(studyDto);
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
