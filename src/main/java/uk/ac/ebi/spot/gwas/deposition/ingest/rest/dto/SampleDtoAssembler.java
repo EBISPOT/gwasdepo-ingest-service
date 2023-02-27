@@ -6,6 +6,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 public class SampleDtoAssembler {
 
     public static SampleDto assemble(Sample sample) {
+
         return new SampleDto(sample.getStudyTag(),
                 sample.getStage(),
                 sample.getSize(),
@@ -15,7 +16,9 @@ public class SampleDtoAssembler {
                 sample.getAncestryCategory(),
                 sample.getAncestry(),
                 sample.getAncestryDescription(),
-                sample.getCountryRecruitement());
+                sample.getCountryRecruitement(),
+                sample.getCaseControlStudy(),
+                sample.getAncestryMethod());
     }
 
     public static Sample disassemble(SampleDto sampleDto) {

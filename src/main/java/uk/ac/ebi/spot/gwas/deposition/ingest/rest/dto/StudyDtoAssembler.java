@@ -43,7 +43,8 @@ public class StudyDtoAssembler {
         //DiseaseTrait diseaseTrait = diseaseTraitOptional.get();
 
 
-        return new StudyDto(study.getStudyTag(),
+        return new StudyDto(
+                study.getStudyTag(),
                 study.getId(),
                 study.getAccession(),
                 study.getGenotypingTechnology(),
@@ -89,7 +90,13 @@ public class StudyDtoAssembler {
                 study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getNeg_log_p_value(),
+                study.getEffect_allele_frequency_lower_limit()
                 );
     }
 
@@ -128,7 +135,13 @@ public class StudyDtoAssembler {
                 null,
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getNeg_log_p_value(),
+                study.getEffect_allele_frequency_lower_limit()
                 );
     }
 
