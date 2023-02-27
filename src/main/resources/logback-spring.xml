@@ -32,6 +32,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 180 days' worth of history -->
+                <maxHistory>180</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
