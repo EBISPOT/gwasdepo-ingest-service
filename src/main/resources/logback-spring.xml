@@ -32,8 +32,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
-                <!-- keep 180 days' worth of history -->
-                <maxHistory>180</maxHistory>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -60,6 +60,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -85,6 +87,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -111,6 +115,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -138,6 +144,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -169,6 +177,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
