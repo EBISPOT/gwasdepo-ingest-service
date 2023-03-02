@@ -10,7 +10,7 @@ import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.EfoTrait;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.EFOTraitIngestDTO;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.EFOTraitAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.EfoTraitService;
 
 import java.util.List;
@@ -24,13 +24,13 @@ public class EFOTraitsController {
     EfoTraitService efoTraitService;
 
     @Autowired
-    EFOTraitAssembler efoTraitAssembler;
+    EFOTraitAssemblyService efoTraitAssemblyService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EFOTraitIngestDTO> getEfoTraits() {
         List<EfoTrait> efoTraits =  efoTraitService.getEfoTraits();
-        return efoTraits.stream().map(efoTraitAssembler::assemble).collect(Collectors.toList());
+        return efoTraits.stream().map(efoTraitAssemblyService::assemble).collect(Collectors.toList());
 
     }
 }

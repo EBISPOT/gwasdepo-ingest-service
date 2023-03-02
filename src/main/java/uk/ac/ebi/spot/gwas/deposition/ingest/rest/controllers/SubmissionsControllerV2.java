@@ -10,7 +10,7 @@ import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionServiceV2;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyServiceV2;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 
 @RestController
@@ -23,7 +23,7 @@ public class SubmissionsControllerV2 {
     private SubmissionService submissionService;
 
     @Autowired
-    private SubmissionServiceV2 submissionAssemblyServiceV2;
+    private SubmissionAssemblyServiceV2 submissionAssemblyServiceV2;
 
     /**
      * GET /v1/submissions/{submissionId}

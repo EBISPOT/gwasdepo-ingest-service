@@ -1,19 +1,14 @@
 package uk.ac.ebi.spot.gwas.deposition.ingest.util;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class SubmissionsUtil {
 
-    public static Page<Submission> filterForOther(Page<Submission> submissions) {
+    public static List<Submission> filterForOther(List<Submission> submissions) {
         List<Submission> result = new ArrayList<>();
         for (Submission submission : submissions) {
             if (submission.getOverallStatus().equalsIgnoreCase(Status.CURATION_COMPLETE.name())) {
@@ -26,18 +21,18 @@ public class SubmissionsUtil {
 
             result.add(submission);
         }
-
-        return new PageImpl<>(result, submissions.getPageable(), submissions.getTotalElements());
+        return result;
     }
 
-    public static Page<Submission> filterForReadyToImport(Page<Submission> submissions) {
+    public static List<Submission> filterForReadyToImport(List<Submission> submissions) {
         List<Submission> result = new ArrayList<>();
         for (Submission submission : submissions) {
             if (submission.getPublicationId() == null) {
                 continue;
             }
+
             result.add(submission);
         }
-        return new PageImpl<>(result, submissions.getPageable(), submissions.getTotalElements());
+        return result;
     }
 }

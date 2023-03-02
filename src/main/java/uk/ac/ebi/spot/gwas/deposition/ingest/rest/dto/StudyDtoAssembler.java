@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
@@ -12,7 +11,6 @@ import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.DiseaseTraitRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.EfoTraitRepository;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
 
