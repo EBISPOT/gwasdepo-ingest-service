@@ -28,7 +28,7 @@ public class SampleServiceImpl implements SampleService {
     public Page<Sample> getSamplesByAccessionId(String accessionId, Pageable pageable) {
         Study study = studyService.getStudy(accessionId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Accession %s not found", accessionId)));
-        return sampleRepository.findByStudyTag(study.getStudyTag(), pageable);
+        return sampleRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), study.getSubmissionId(), pageable);
     }
 }
 
