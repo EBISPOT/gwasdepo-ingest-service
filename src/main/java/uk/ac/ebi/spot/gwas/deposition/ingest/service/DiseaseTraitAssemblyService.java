@@ -2,7 +2,6 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.service;
 
 import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.dto.curation.DiseaseTraitDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.curation.DiseaseTraitWrapperDTO;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.DiseaseTraitIngestDTO;
 
 public interface DiseaseTraitAssemblyService {

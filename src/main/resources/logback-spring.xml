@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <property scope="context" name="serviceName" value="ingest-service"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <springProfile name="dev,local">
+    <springProfile name="local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+
+        <logger name="uk.ac.ebi.spot.gwas" level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="org.springframework" level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="dev">
         <property resource="logging-dev.properties"/>
 
         <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -14,6 +32,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -40,6 +60,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -65,6 +87,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -91,6 +115,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -118,6 +144,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>
@@ -149,6 +177,8 @@
                     <!-- or whenever the file size reaches 100MB -->
                     <maxFileSize>${log.max.file.size}</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <!-- keep 60 days' worth of history -->
+                <maxHistory>60</maxHistory>
             </rollingPolicy>
             <encoder>
                 <pattern>${log.pattern}</pattern>

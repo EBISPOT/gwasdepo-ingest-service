@@ -3,7 +3,6 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.dto.curation.DiseaseTraitDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.curation.DiseaseTraitWrapperDTO;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.DiseaseTraitIngestDTO;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
 

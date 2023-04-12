@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
@@ -12,7 +11,6 @@ import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.DiseaseTraitRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.EfoTraitRepository;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
 
@@ -43,7 +41,8 @@ public class StudyDtoAssembler {
         //DiseaseTrait diseaseTrait = diseaseTraitOptional.get();
 
 
-        return new StudyDto(study.getStudyTag(),
+        return new StudyDto(
+                study.getStudyTag(),
                 study.getId(),
                 study.getAccession(),
                 study.getGenotypingTechnology(),
@@ -89,8 +88,14 @@ public class StudyDtoAssembler {
                 study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
-                );
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
@@ -128,13 +133,18 @@ public class StudyDtoAssembler {
                 null,
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
-                );
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static Study disassemble(StudyDto studyDto) {
         Study study = new Study();
-
         study.setStudyTag(studyDto.getStudyTag());
         study.setAccession(studyDto.getAccession());
         study.setGenotypingTechnology(studyDto.getGenotypingTechnology());
@@ -142,20 +152,31 @@ public class StudyDtoAssembler {
         study.setArrayInformation(studyDto.getArrayInformation());
         study.setImputation(studyDto.getImputation());
         study.setVariantCount(studyDto.getVariantCount());
-        study.setSampleDescription(studyDto.getSampleDescription());
         study.setStatisticalModel(studyDto.getStatisticalModel());
         study.setStudyDescription(studyDto.getStudyDescription());
         study.setTrait(studyDto.getTrait());
+        study.setSampleDescription(studyDto.getSampleDescription());
         study.setEfoTrait(studyDto.getEfoTrait());
-        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setBackgroundEfoTrait(studyDto.getBackgroundEfoTrait());
-        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
-        study.setChecksum(studyDto.getChecksum());
+        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setSummaryStatisticsAssembly(studyDto.getSummaryStatisticsAssembly());
+        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
+        study.setRawFilePath(studyDto.getRawSumstatsFile());
         study.setReadmeFile(studyDto.getReadmeFile());
+        study.setChecksum(studyDto.getChecksum());
         study.setCohort(studyDto.getCohort());
         study.setCohortId(studyDto.getCohortId());
-
+        study.setInitialSampleDescription(studyDto.getInitialSampleDescription());
+        study.setReplicateSampleDescription(studyDto.getReplicateSampleDescription());
+        study.setSumstatsFlag(studyDto.getSumstatsFlag());
+        study.setPooledFlag(studyDto.getPooledFlag());
+        study.setGxeFlag(studyDto.getGxeFlag());
+        study.setImputationPanel(studyDto.getImputationPanel());
+        study.setImputationSoftware(studyDto.getImputationSoftware());
+        study.setAdjustedCovariates(studyDto.getAdjustedCovariates());
+        study.setEffect_allele_frequency_lower_limit(studyDto.getMinor_allele_frequency_lower_limit());
+        study.setSex(studyDto.getSex());
+        study.setCoordinateSystem(studyDto.getCoordinateSystem());
         return study;
     }
 }

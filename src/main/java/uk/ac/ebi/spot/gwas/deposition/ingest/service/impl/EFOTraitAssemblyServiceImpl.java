@@ -2,13 +2,9 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
 
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.domain.EfoTrait;
-import uk.ac.ebi.spot.gwas.deposition.dto.curation.EFOTraitWrapperDTO;
 import uk.ac.ebi.spot.gwas.deposition.dto.curation.EfoTraitDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.EFOTraitIngestDTO;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EFOTraitAssemblyServiceImpl implements EFOTraitAssemblyService {
