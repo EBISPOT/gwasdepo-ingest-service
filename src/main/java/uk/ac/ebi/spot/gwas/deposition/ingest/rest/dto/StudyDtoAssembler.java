@@ -93,9 +93,9 @@ public class StudyDtoAssembler {
                 study.getImputationPanel(),
                 study.getImputationSoftware(),
                 study.getAdjustedCovariates(),
-                study.getNeg_log_p_value(),
-                study.getEffect_allele_frequency_lower_limit()
-                );
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
@@ -138,14 +138,13 @@ public class StudyDtoAssembler {
                 study.getImputationPanel(),
                 study.getImputationSoftware(),
                 study.getAdjustedCovariates(),
-                study.getNeg_log_p_value(),
-                study.getEffect_allele_frequency_lower_limit()
-                );
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static Study disassemble(StudyDto studyDto) {
         Study study = new Study();
-
         study.setStudyTag(studyDto.getStudyTag());
         study.setAccession(studyDto.getAccession());
         study.setGenotypingTechnology(studyDto.getGenotypingTechnology());
@@ -153,20 +152,31 @@ public class StudyDtoAssembler {
         study.setArrayInformation(studyDto.getArrayInformation());
         study.setImputation(studyDto.getImputation());
         study.setVariantCount(studyDto.getVariantCount());
-        study.setSampleDescription(studyDto.getSampleDescription());
         study.setStatisticalModel(studyDto.getStatisticalModel());
         study.setStudyDescription(studyDto.getStudyDescription());
         study.setTrait(studyDto.getTrait());
+        study.setSampleDescription(studyDto.getSampleDescription());
         study.setEfoTrait(studyDto.getEfoTrait());
-        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setBackgroundEfoTrait(studyDto.getBackgroundEfoTrait());
-        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
-        study.setChecksum(studyDto.getChecksum());
+        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setSummaryStatisticsAssembly(studyDto.getSummaryStatisticsAssembly());
+        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
+        study.setRawFilePath(studyDto.getRawSumstatsFile());
         study.setReadmeFile(studyDto.getReadmeFile());
+        study.setChecksum(studyDto.getChecksum());
         study.setCohort(studyDto.getCohort());
         study.setCohortId(studyDto.getCohortId());
-
+        study.setInitialSampleDescription(studyDto.getInitialSampleDescription());
+        study.setReplicateSampleDescription(studyDto.getReplicateSampleDescription());
+        study.setSumstatsFlag(studyDto.getSumstatsFlag());
+        study.setPooledFlag(studyDto.getPooledFlag());
+        study.setGxeFlag(studyDto.getGxeFlag());
+        study.setImputationPanel(studyDto.getImputationPanel());
+        study.setImputationSoftware(studyDto.getImputationSoftware());
+        study.setAdjustedCovariates(studyDto.getAdjustedCovariates());
+        study.setEffect_allele_frequency_lower_limit(studyDto.getMinor_allele_frequency_lower_limit());
+        study.setSex(studyDto.getSex());
+        study.setCoordinateSystem(studyDto.getCoordinateSystem());
         return study;
     }
 }
