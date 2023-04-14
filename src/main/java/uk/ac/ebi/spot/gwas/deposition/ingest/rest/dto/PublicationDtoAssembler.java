@@ -13,6 +13,7 @@ public class PublicationDtoAssembler {
                 new CorrespondingAuthor(publicationDto.getCorrespondingAuthor().getAuthorName(),
                         publicationDto.getCorrespondingAuthor().getEmail()) : null;
         Publication publication = new Publication();
+        publication.setPmid(publicationDto.getPmid());
         publication.setJournal(publicationDto.getJournal());
         publication.setTitle(publicationDto.getTitle());
         publication.setFirstAuthor(publicationDto.getFirstAuthor());
