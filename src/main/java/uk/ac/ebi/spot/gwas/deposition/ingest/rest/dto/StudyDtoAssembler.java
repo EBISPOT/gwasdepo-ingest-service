@@ -37,7 +37,7 @@ public class StudyDtoAssembler {
 
     public  StudyDto assemble(Study study) {
 
-        log.info("Study Accession Id {}",study.getAccession());
+        //log.info("Study Accession Id {}",study.getAccession());
         //DiseaseTrait diseaseTrait = diseaseTraitOptional.get();
 
 
