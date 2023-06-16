@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
@@ -80,6 +82,16 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         log.info("Found {} submissions.", submissions.size());
         return submissions;
+    }
+
+    public Page<Submission> getSubmissions(Pageable pageable) {
+
+        return submissionRepository.findByArchived(false, pageable);
+    }
+
+    public Long countSubmissions() {
+        log.info("Count of Submissions block");
+        return submissionRepository.countByArchived(false);
     }
 
     @Override
