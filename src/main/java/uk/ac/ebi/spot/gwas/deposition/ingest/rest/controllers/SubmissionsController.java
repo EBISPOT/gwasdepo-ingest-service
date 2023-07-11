@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.Link;
@@ -14,6 +15,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
@@ -60,7 +62,8 @@ public class SubmissionsController {
     public PagedResources<Resource<SubmissionDto>> getSubmissions(PagedResourcesAssembler<Submission> assembler,
                                                                   @RequestParam(value = IngestServiceConstants.PARAM_PMID, required = false) String pmid,
                                                                   @RequestParam(value = IngestServiceConstants.PARAM_STATUS, required = false) String status,
-                                                                  @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+                                                                  @SortDefault(sort = "id", direction = Sort.Direction.ASC)
+                                                                      @PageableDefault(size = 10, page = 0)  Pageable pageable) {
         log.info("Request to retrieve all submissions - including for PMID: {} | {}", pmid, status);
         log.info("Request to retrieve submissions of page: {}, size: {} ", pageable.getPageNumber(), pageable.getPageSize());
         String pubId = null;
@@ -80,7 +83,7 @@ public class SubmissionsController {
     /**
      * PUT /v1/submissions/{submissionId}
      */
-    @PutMapping(value = "/{submissionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{submissionId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public Resource<SubmissionDto> updateSubmission(@PathVariable String submissionId,
                                                     @RequestBody SubmissionDto submissionDto) {
@@ -88,5 +91,6 @@ public class SubmissionsController {
         Submission submission = submissionService.updateSubmission(submissionId, submissionDto.getStatus());
         log.info("Returning submission: {}", submission.getId());
         return submissionAssembler.toResource(submission);
+
     }
 }

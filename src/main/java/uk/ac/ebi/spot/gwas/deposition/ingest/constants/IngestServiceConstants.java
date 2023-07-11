@@ -24,6 +24,8 @@ public class IngestServiceConstants {
 
     public static final String PARAM_SUBMISSIONID = "submissionId";
 
+    public static final String PARAM_STUDY_TAG = "studyTag";
+
     public static final String API_DISEASE_TRAITS = "/reported-traits";
 
     public static final String API_EFO_TRAITS = "/efo-traits";

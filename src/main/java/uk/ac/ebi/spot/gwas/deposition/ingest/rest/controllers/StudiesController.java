@@ -47,10 +47,13 @@ public class StudiesController {
     @GetMapping(value = "/{submissionId}/" + IngestServiceConstants.API_STUDIES, produces = MediaTypes.HAL_JSON_VALUE)
     public PagedResources<Resource<StudyDto>> getSubmissions(@PathVariable(IngestServiceConstants.PARAM_SUBMISSIONID) String submissionId,
                                                             PagedResourcesAssembler<Study> assembler,
-                                                            Pageable pageable) {
+                                                             @PageableDefault(size = 10, page = 0) Pageable pageable) {
         log.info("Request to retrieve studies for submission: {} - {}", submissionId, pageable.getPageNumber());
         Page<Study> studies = studyService.getStudiesBySubmission(submissionId, pageable);
         return assembler.toResource(studies, studyAssembler);
     }
+
+
+
 
 }

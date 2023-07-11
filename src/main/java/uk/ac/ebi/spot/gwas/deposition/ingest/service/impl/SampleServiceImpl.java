@@ -18,4 +18,8 @@ public class SampleServiceImpl implements SampleService {
     public Page<Sample> getSampleBySubmission(String submissionId, Pageable pageable) {
         return sampleRepository.findBySubmissionId(submissionId, pageable);
     }
+    @Override
+    public Page<Sample> getSampleBySubmissionAndStudyTag(String submissionId, String studyTag,  Pageable pageable){
+        return sampleRepository.findBySubmissionIdAndStudyTag(submissionId, studyTag, pageable);
+    }
 }

@@ -13,5 +13,5 @@ public interface SampleRepository extends MongoRepository<Sample, String> {
 
     List<Sample> findByIdIn(List<String> ids);
 
-    List<Sample> findByStudyTagAndSubmissionId(String studyTag, String submissionId);
+    Page<Sample> findBySubmissionIdAndStudyTag(String submissionId, String studyTag, Pageable page);
 }

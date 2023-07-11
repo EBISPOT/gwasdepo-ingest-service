@@ -9,5 +9,7 @@ public interface SampleService {
 
     Page<Sample> getSampleBySubmission(String submissionId, Pageable pageable);
 
+    Page<Sample> getSampleBySubmissionAndStudyTag(String submissionId, String studyTag,  Pageable pageable);
+
 }
 

@@ -18,4 +18,8 @@ public class AssociationServiceImpl implements AssociationService {
     public Page<Association> getAssociationBySubmission(String submissionId, Pageable pageable) {
         return associationRepository.findBySubmissionId(submissionId, pageable);
     }
+    @Override
+    public Page<Association> getAssociationBySubmissionAndStudyTag(String submissionId, String studyTag, Pageable pageable) {
+        return associationRepository.findBySubmissionIdAndStudyTag(submissionId, studyTag, pageable);
+    }
 }
