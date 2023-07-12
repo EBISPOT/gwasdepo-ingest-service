@@ -1,20 +1,13 @@
 package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.stereotype.Component;
 import uk.ac.ebi.spot.gwas.deposition.domain.Sample;
-import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 
-@Component
-public class SampleAssembler implements ResourceAssembler<Sample, Resource<SampleDto>> {
+public class SampleDtoAssembler {
 
-    @Override
-    public Resource<SampleDto> toResource(Sample sample) {
+    public static SampleDto assemble(Sample sample) {
 
-        SampleDto sampleDto = new SampleDto(sample.getStudyTag(),
+        return new SampleDto(sample.getStudyTag(),
                 sample.getStage(),
                 sample.getSize(),
                 sample.getCases(),
@@ -23,9 +16,9 @@ public class SampleAssembler implements ResourceAssembler<Sample, Resource<Sampl
                 sample.getAncestryCategory(),
                 sample.getAncestry(),
                 sample.getAncestryDescription(),
-                sample.getCountryRecruitement());
-
-        return new Resource<>(sampleDto);
+                sample.getCountryRecruitement(),
+                sample.getCaseControlStudy(),
+                sample.getAncestryMethod());
     }
 
     public static Sample disassemble(SampleDto sampleDto) {
@@ -42,5 +35,4 @@ public class SampleAssembler implements ResourceAssembler<Sample, Resource<Sampl
         sample.setCountryRecruitement(sampleDto.getCountryRecruitement());
         return sample;
     }
-
 }

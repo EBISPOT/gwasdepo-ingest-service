@@ -17,4 +17,8 @@ public interface SubmissionService {
     Submission getSubmissionForPublication(String id);
 
     boolean submissionExistsForPublication(String id);
+
+    Page<Submission> getSubmissions(Pageable pageable);
+
+    Long countSubmissions();
 }

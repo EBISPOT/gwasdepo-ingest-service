@@ -15,8 +15,9 @@ import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
+
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionAssemblyService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.SubmissionAssembler;
 
 import java.util.List;
 
@@ -30,10 +31,13 @@ public class EnvelopeSubmissionsController {
     private SubmissionService submissionService;
 
     @Autowired
+
     PublicationService publicationService;
 
     @Autowired
-    private SubmissionAssembler submissionAssembler;
+    private SubmissionAssemblyService submissionAssembler;
+
+
 
     /**
      * GET /v1/submission-envelopes
@@ -50,6 +54,8 @@ public class EnvelopeSubmissionsController {
         Page<Submission> submissions = submissionService.getSubmissions(publication != null ? publication.getId() : null, null, wholePage);
         log.info("Found {} submissions.", submissions.getTotalElements());
         return submissionAssembler.assembleEnvelopes(submissions);
+
+
     }
 
 }

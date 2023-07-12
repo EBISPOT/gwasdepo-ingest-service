@@ -12,14 +12,15 @@ public class PublicationDtoAssembler {
         CorrespondingAuthor correspondingAuthor = publicationDto.getCorrespondingAuthor() != null ?
                 new CorrespondingAuthor(publicationDto.getCorrespondingAuthor().getAuthorName(),
                         publicationDto.getCorrespondingAuthor().getEmail()) : null;
-
-        return new Publication(publicationDto.getPmid(),
-                publicationDto.getJournal(),
-                publicationDto.getTitle(),
-                publicationDto.getFirstAuthor(),
-                publicationDto.getPublicationDate(),
-                correspondingAuthor,
-                publicationDto.getStatus() != null ? publicationDto.getStatus() : PublicationStatus.ELIGIBLE.name());
+        Publication publication = new Publication();
+        publication.setPmid(publicationDto.getPmid());
+        publication.setJournal(publicationDto.getJournal());
+        publication.setTitle(publicationDto.getTitle());
+        publication.setFirstAuthor(publicationDto.getFirstAuthor());
+        publication.setPublicationDate(publicationDto.getPublicationDate());
+        publication.setCorrespondingAuthor(correspondingAuthor);
+        publication.setStatus(publicationDto.getStatus() != null ? publicationDto.getStatus() : PublicationStatus.ELIGIBLE.name());
+        return publication;
     }
 
     public static PublicationDto assemble(Publication publication) {

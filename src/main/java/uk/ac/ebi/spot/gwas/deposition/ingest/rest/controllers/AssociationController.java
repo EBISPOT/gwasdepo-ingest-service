@@ -16,7 +16,7 @@ import uk.ac.ebi.spot.gwas.deposition.domain.Association;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.AssociationAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.AssociationDtoAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.AssociationService;
 
 @Slf4j
@@ -28,7 +28,7 @@ public class AssociationController {
     private AssociationService associationService;
 
     @Autowired
-    private AssociationAssembler associationAssembler;
+    private AssociationDtoAssembler associationAssembler;
 
     /**
      * GET /v1/submissions/<submissionId>/associations&page=<page>&size=<size>

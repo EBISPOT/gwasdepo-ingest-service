@@ -1,25 +1,32 @@
-package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
+package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.domain.DiseaseTrait;
 import uk.ac.ebi.spot.gwas.deposition.dto.curation.DiseaseTraitDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.DiseaseTraitIngestDTO;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
 
-@Component
-public class DiseaseTraitAssembler {
+@Service
+public class DiseaseTraitAssemblyServiceImpl implements DiseaseTraitAssemblyService {
 
     public DiseaseTraitIngestDTO assemble(DiseaseTrait diseaseTrait) {
-        return DiseaseTraitIngestDTO.builder()
+
+        DiseaseTraitIngestDTO diseaseTraitDTO = DiseaseTraitIngestDTO.builder()
                 .trait(diseaseTrait.getTrait())
                 .mongoSeqId(diseaseTrait.getId())
                 .build();
+
+
+        return diseaseTraitDTO;
     }
 
     public DiseaseTraitDto assembleDTO(DiseaseTrait diseaseTrait) {
 
-        return DiseaseTraitDto.builder()
+        DiseaseTraitDto diseaseTraitDTO = DiseaseTraitDto.builder()
                 .trait(diseaseTrait.getTrait())
                 .build();
+
+
+        return diseaseTraitDTO;
     }
 }

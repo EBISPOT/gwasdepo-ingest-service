@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.PublicationIngestStatus;
-import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
 import uk.ac.ebi.spot.gwas.deposition.domain.PublicationIngestEntry;
 import uk.ac.ebi.spot.gwas.deposition.domain.SSTemplateEntryPlaceholder;
@@ -142,7 +141,6 @@ public class PublicationServiceImpl implements PublicationService {
     public List<Publication> getByIdIn(List<String> pubIds) {
         return publicationRepository.findByIdIn(pubIds);
     }
-
     @Override
     public Optional<Publication> getById(String publicationId) {
         return publicationRepository.findById(publicationId);
@@ -157,6 +155,4 @@ public class PublicationServiceImpl implements PublicationService {
         }
         return publicationOptional.get();
     }
-
-
 }

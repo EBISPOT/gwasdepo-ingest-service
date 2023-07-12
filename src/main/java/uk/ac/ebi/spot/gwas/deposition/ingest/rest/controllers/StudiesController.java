@@ -21,11 +21,9 @@ import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.StudyAssembler;
+import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.StudyDtoAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.StudyService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionServiceV2;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.util.BackendUtil;
+
 
 import java.util.List;
 
@@ -38,7 +36,7 @@ public class StudiesController {
     private StudyService studyService;
 
     @Autowired
-    private StudyAssembler studyAssembler;
+    private StudyDtoAssembler studyAssembler;
 
     /**
      * GET /v1/submissions/submissionId/<submissionId>/studies&page=<page>

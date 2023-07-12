@@ -15,14 +15,17 @@ public class TestUtil {
     }
 
     public static Publication publication() {
-        return new Publication(RandomStringUtils.randomAlphanumeric(10),
-                RandomStringUtils.randomAlphanumeric(10),
-                RandomStringUtils.randomAlphanumeric(10),
-                RandomStringUtils.randomAlphanumeric(10),
-                LocalDate.now(),
-                new CorrespondingAuthor(RandomStringUtils.randomAlphanumeric(10),
-                        RandomStringUtils.randomAlphanumeric(10)),
-                PublicationStatus.ELIGIBLE.name());
+
+        Publication publication = new Publication();
+        publication.setJournal(RandomStringUtils.randomAlphanumeric(10));
+        publication.setTitle(RandomStringUtils.randomAlphanumeric(10));
+        publication.setFirstAuthor(RandomStringUtils.randomAlphanumeric(10));
+        publication.setPublicationDate(LocalDate.now());
+        publication.setCorrespondingAuthor(new CorrespondingAuthor(RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10)));
+        publication.setStatus(PublicationStatus.ELIGIBLE.name());
+
+        return publication;
     }
 
 }

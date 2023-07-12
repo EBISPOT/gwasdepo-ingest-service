@@ -46,7 +46,7 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
     @Override
     public BodyOfWork retrieveBodyOfWork(String bodyOfWorkId) {
         log.info("Retrieving body of work: {}", bodyOfWorkId);
-        Optional<BodyOfWork> optionalBodyOfWork = this.getByBowIdAndArchived(bodyOfWorkId, false);
+        Optional<BodyOfWork> optionalBodyOfWork = bodyOfWorkRepository.findByBowIdAndArchived(bodyOfWorkId, false);
         if (!optionalBodyOfWork.isPresent()) {
             log.error("Unable to find body of work with ID: {}", bodyOfWorkId);
             throw new EntityNotFoundException("Unable to find body of work with ID: " + bodyOfWorkId);
@@ -80,7 +80,7 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
                     bodyOfWorkWatch.setVisited(true);
                     bodyOfWorkWatchRepository.save(bodyOfWorkWatch);
                 }
-                return this.getByBowIdInAndArchived(ids, false);
+                return bodyOfWorkRepository.findByBowIdInAndArchived(ids, false);
             }
 
             return bodyOfWorkRepository.findByStatusAndArchived(status, false);
@@ -116,6 +116,7 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
         log.info("Found {} body of works.", bodyOfWorks.size());
         return bodyOfWorks.size() != 0;
     }
+
 
     @Override
     public BodyOfWork getBodyOfWorkBySubmission(Submission submission){

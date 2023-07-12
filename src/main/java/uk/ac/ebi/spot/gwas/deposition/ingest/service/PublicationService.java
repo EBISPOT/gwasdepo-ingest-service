@@ -26,5 +26,4 @@ public interface PublicationService {
     Optional<Publication> getById(String publicationId);
 
     Publication getPublicationBySubmission(Submission submission);
-
 }

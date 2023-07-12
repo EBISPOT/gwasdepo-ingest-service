@@ -10,10 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
-import uk.ac.ebi.spot.gwas.deposition.domain.*;
+import uk.ac.ebi.spot.gwas.deposition.domain.CompletedSubmission;
+import uk.ac.ebi.spot.gwas.deposition.domain.Provenance;
+import uk.ac.ebi.spot.gwas.deposition.domain.Submission;
+import uk.ac.ebi.spot.gwas.deposition.domain.User;
 import uk.ac.ebi.spot.gwas.deposition.exception.EntityNotFoundException;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
-import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.CompletedSubmissionRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.SubmissionRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.util.SubmissionsUtil;
 
@@ -49,10 +54,8 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public Page<Submission> getSubmissions(String publicationId, String status, Pageable pageable) {
+    public Page<Submission>  getSubmissions(String publicationId, String status, Pageable pageable) {
         log.info("Retrieving submissions: {} | {}", publicationId, status);
-        Page<Submission> submissions;
-
         if (publicationId != null) {
             Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(publicationId, false);
             if (optionalSubmission.isPresent()) {
@@ -60,7 +63,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             }
             return new PageImpl<>(new ArrayList<>());
         }
-
+        Page<Submission> submissions;
         if (status == null) {
             submissions = submissionRepository.findByArchived(false, pageable);
         } else {
@@ -77,6 +80,16 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         log.info("Found {} submissions.", submissions.getTotalElements());
         return submissions;
+    }
+
+    public Page<Submission> getSubmissions(Pageable pageable) {
+
+        return submissionRepository.findByArchived(false, pageable);
+    }
+
+    public Long countSubmissions() {
+        log.info("Count of Submissions block");
+        return submissionRepository.countByArchived(false);
     }
 
     @Override

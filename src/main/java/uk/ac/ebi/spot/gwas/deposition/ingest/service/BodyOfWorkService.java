@@ -10,9 +10,7 @@ import java.util.Optional;
 public interface BodyOfWorkService {
 
     List<BodyOfWork> getByBowIdInAndArchived(List<String> bodyOfWorkIds, boolean archived);
-
     Optional<BodyOfWork> getByBowIdAndArchived(String bodyOfWorkId, boolean archived);
-
     BodyOfWork retrieveBodyOfWork(String bodyOfWork);
 
     List<BodyOfWork> retrieveBodyOfWorks(String status);
@@ -22,5 +20,4 @@ public interface BodyOfWorkService {
     boolean bowExistsForPublication(String pmid);
 
     BodyOfWork getBodyOfWorkBySubmission(Submission submission);
-
 }

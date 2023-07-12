@@ -5,12 +5,9 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.spot.gwas.deposition.domain.Association;
-import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
-
 @Component
-public class AssociationAssembler implements ResourceAssembler<Association, Resource<AssociationDto>> {
+public class AssociationDtoAssembler implements ResourceAssembler<Association, Resource<AssociationDto>> {
 
     @Override
     public Resource<AssociationDto> toResource(Association association) {
@@ -34,6 +31,24 @@ public class AssociationAssembler implements ResourceAssembler<Association, Reso
         return new Resource<>(associationDto);
     }
 
+    public static AssociationDto assemble(Association association) {
+        return new AssociationDto(association.getStudyTag(),
+                association.getHaplotypeId(),
+                association.getVariantId(),
+                association.getPvalue(),
+                association.getPvalueText(),
+                association.getProxyVariant(),
+                association.getEffectAllele(),
+                association.getOtherAllele(),
+                association.getEffectAlleleFrequency(),
+                association.getOddsRatio(),
+                association.getBeta(),
+                association.getBetaUnit(),
+                association.getCiLower(),
+                association.getCiUpper(),
+                association.getStandardError());
+    }
+
     public static Association disassemble(AssociationDto associationDto) {
         Association association = new Association();
 
@@ -55,5 +70,4 @@ public class AssociationAssembler implements ResourceAssembler<Association, Reso
 
         return association;
     }
-
 }

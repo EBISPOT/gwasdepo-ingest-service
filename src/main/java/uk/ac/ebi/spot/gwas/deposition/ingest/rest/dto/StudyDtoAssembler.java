@@ -11,36 +11,32 @@ import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.NoteDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.DiseaseTraitRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.EfoTraitRepository;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
-import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsController;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.DiseaseTraitAssemblyService;
+import uk.ac.ebi.spot.gwas.deposition.ingest.service.EFOTraitAssemblyService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
 @Component
-public class StudyAssembler implements ResourceAssembler<Study, Resource<StudyDto>> {
+public class StudyDtoAssembler implements ResourceAssembler<Study, Resource<StudyDto>> {
 
-    private static final Logger log = LoggerFactory.getLogger(StudyAssembler.class);
 
-    @Autowired
-    DiseaseTraitAssembler diseaseTraitAssembler;
+    private static final Logger log = LoggerFactory.getLogger(StudyDtoAssembler.class);
 
     @Autowired
-    EFOTraitAssembler efoTraitAssembler;
+    DiseaseTraitAssemblyService diseaseTraitAssemblyService;
+
+    @Autowired
+    EFOTraitAssemblyService efoTraitAssemblyService;
 
     @Autowired
     DiseaseTraitRepository diseaseTraitRepository;
 
     @Autowired
     EfoTraitRepository efoTraitRepository;
-
 
     @Override
     public Resource<StudyDto> toResource(Study study) {
@@ -72,24 +68,94 @@ public class StudyAssembler implements ResourceAssembler<Study, Resource<StudyDt
                 null,
                 null,
                 study.isAgreedToCc0(),
-                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssembler::assembleDTO).orElse(null) ,
+                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssemblyService::assembleDTO).orElse(null) ,
                 study.getEfoTraits() != null ? study.getEfoTraits().stream().map(efoTraitRepository::findById)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .map(efoTraitAssembler::assembleDTO)
+                        .map(efoTraitAssemblyService::assembleDTO)
                         .collect(Collectors.toList()) : null,
                 study.getBackgroundEfoTraits() != null ? study.getBackgroundEfoTraits().stream().map(efoTraitRepository::findById)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .map(efoTraitAssembler::assembleDTO)
+                        .map(efoTraitAssemblyService::assembleDTO)
                         .collect(Collectors.toList()) : null,
                 study.getInitialSampleDescription(),
                 study.getReplicateSampleDescription(),
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag());
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
 
         return new Resource<>(studyDto);
+    }
+
+    public  StudyDto assemble(Study study) {
+
+        //log.info("Study Accession Id {}",study.getAccession());
+        //DiseaseTrait diseaseTrait = diseaseTraitOptional.get();
+
+
+        return new StudyDto(
+                study.getStudyTag(),
+                study.getId(),
+                study.getAccession(),
+                study.getGenotypingTechnology(),
+                study.getArrayManufacturer(),
+                study.getArrayInformation(),
+                study.getImputation(),
+                study.getVariantCount(),
+                study.getSampleDescription(),
+                study.getStatisticalModel(),
+                study.getStudyDescription(),
+                study.getTrait(),
+                study.getEfoTrait(),
+                study.getBackgroundTrait(),
+                study.getBackgroundEfoTrait(),
+                study.getSummaryStatisticsFile(),
+                study.getRawFilePath(),
+                study.getChecksum(),
+                study.getSummaryStatisticsAssembly(),
+                study.getReadmeFile(),
+                study.getCohort(),
+                study.getCohortId(),
+                null,
+                null,
+                null,
+                study.isAgreedToCc0(),
+                Optional.ofNullable(study.getDiseaseTrait())
+                        .map(diseaseTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(diseaseTraitAssemblyService::assembleDTO)
+                        .orElse(null) ,
+                study.getEfoTraits() != null ? study.getEfoTraits().stream().map(efoTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(efoTraitAssemblyService::assembleDTO)
+                        .collect(Collectors.toList()) : null,
+                study.getBackgroundEfoTraits() != null ? study.getBackgroundEfoTraits().stream().map(efoTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(efoTraitAssemblyService::assembleDTO)
+                        .collect(Collectors.toList()) : null,
+                study.getInitialSampleDescription(),
+                study.getReplicateSampleDescription(),
+                study.getSumstatsFlag(),
+                study.getPooledFlag(),
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
@@ -127,13 +193,18 @@ public class StudyAssembler implements ResourceAssembler<Study, Resource<StudyDt
                 null,
                 study.getSumstatsFlag(),
                 study.getPooledFlag(),
-                study.getGxeFlag()
-                );
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
     }
 
     public static Study disassemble(StudyDto studyDto) {
         Study study = new Study();
-
         study.setStudyTag(studyDto.getStudyTag());
         study.setAccession(studyDto.getAccession());
         study.setGenotypingTechnology(studyDto.getGenotypingTechnology());
@@ -141,20 +212,31 @@ public class StudyAssembler implements ResourceAssembler<Study, Resource<StudyDt
         study.setArrayInformation(studyDto.getArrayInformation());
         study.setImputation(studyDto.getImputation());
         study.setVariantCount(studyDto.getVariantCount());
-        study.setSampleDescription(studyDto.getSampleDescription());
         study.setStatisticalModel(studyDto.getStatisticalModel());
         study.setStudyDescription(studyDto.getStudyDescription());
         study.setTrait(studyDto.getTrait());
+        study.setSampleDescription(studyDto.getSampleDescription());
         study.setEfoTrait(studyDto.getEfoTrait());
-        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setBackgroundEfoTrait(studyDto.getBackgroundEfoTrait());
-        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
-        study.setChecksum(studyDto.getChecksum());
+        study.setBackgroundTrait(studyDto.getBackgroundTrait());
         study.setSummaryStatisticsAssembly(studyDto.getSummaryStatisticsAssembly());
+        study.setSummaryStatisticsFile(studyDto.getSummaryStatisticsFile());
+        study.setRawFilePath(studyDto.getRawSumstatsFile());
         study.setReadmeFile(studyDto.getReadmeFile());
+        study.setChecksum(studyDto.getChecksum());
         study.setCohort(studyDto.getCohort());
         study.setCohortId(studyDto.getCohortId());
-
+        study.setInitialSampleDescription(studyDto.getInitialSampleDescription());
+        study.setReplicateSampleDescription(studyDto.getReplicateSampleDescription());
+        study.setSumstatsFlag(studyDto.getSumstatsFlag());
+        study.setPooledFlag(studyDto.getPooledFlag());
+        study.setGxeFlag(studyDto.getGxeFlag());
+        study.setImputationPanel(studyDto.getImputationPanel());
+        study.setImputationSoftware(studyDto.getImputationSoftware());
+        study.setAdjustedCovariates(studyDto.getAdjustedCovariates());
+        study.setEffect_allele_frequency_lower_limit(studyDto.getMinor_allele_frequency_lower_limit());
+        study.setSex(studyDto.getSex());
+        study.setCoordinateSystem(studyDto.getCoordinateSystem());
         return study;
     }
 }
