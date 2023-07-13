@@ -14,4 +14,6 @@ public interface AssociationRepository extends MongoRepository<Association, Stri
     List<Association> findByIdIn(List<String> ids);
 
     List<Association> findByStudyTagAndSubmissionId(String studyTag, String submissionId);
+
+    Page<Association> findBySubmissionIdAndStudyTag(String studyTag, String submissionId, Pageable pageable);
 }

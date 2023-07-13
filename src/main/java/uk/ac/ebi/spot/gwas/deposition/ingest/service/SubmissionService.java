@@ -10,7 +10,7 @@ public interface SubmissionService {
 
     Submission getSubmission(String submissionId);
 
-    List<Submission> getSubmissions(String publicationId, String status);
+    Page<Submission> getSubmissions(String publicationId, String status, Pageable pageable);
 
     Submission updateSubmission(String submissionId, String status);
 

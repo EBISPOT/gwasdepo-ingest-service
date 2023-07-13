@@ -30,5 +30,13 @@ public class SampleServiceImpl implements SampleService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Accession %s not found", accessionId)));
         return sampleRepository.findByStudyTagAndSubmissionId(study.getStudyTag(), study.getSubmissionId(), pageable);
     }
+    @Override
+    public Page<Sample> getSampleBySubmissionAndStudyTag(String submissionId, String studyTag,  Pageable pageable){
+        return sampleRepository.findBySubmissionIdAndStudyTag(submissionId, studyTag, pageable);
+    }
+    @Override
+    public Page<Sample> getSampleBySubmission(String submissionId, Pageable pageable) {
+        return sampleRepository.findBySubmissionId(submissionId, pageable);
+    }
 }
 

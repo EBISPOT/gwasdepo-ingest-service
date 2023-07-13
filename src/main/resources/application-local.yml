@@ -4,6 +4,8 @@ mongo-server:
 
 server:
   port: 8082
+  servlet:
+    context-path: /gwas/ingest/api
 
 spring:
   data:

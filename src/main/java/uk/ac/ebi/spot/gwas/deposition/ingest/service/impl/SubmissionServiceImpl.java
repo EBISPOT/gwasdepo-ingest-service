@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.Status;
@@ -21,10 +22,7 @@ import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.util.SubmissionsUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -56,31 +54,31 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public List<Submission> getSubmissions(String publicationId, String status) {
+    public Page<Submission>  getSubmissions(String publicationId, String status, Pageable pageable) {
         log.info("Retrieving submissions: {} | {}", publicationId, status);
         if (publicationId != null) {
             Optional<Submission> optionalSubmission = submissionRepository.findByPublicationIdAndArchived(publicationId, false);
             if (optionalSubmission.isPresent()) {
-                return Arrays.asList(new Submission[]{optionalSubmission.get()});
+                return new PageImpl<>(Collections.singletonList(optionalSubmission.get()));
             }
-            return new ArrayList<>();
+            return new PageImpl<>(new ArrayList<>());
         }
-        List<Submission> submissions;
+        Page<Submission> submissions;
         if (status == null) {
-            submissions = submissionRepository.findByArchived(false);
+            submissions = submissionRepository.findByArchived(false, pageable);
         } else {
             if (status.equalsIgnoreCase("OTHER")) {
-                submissions = SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false));
+                submissions = SubmissionsUtil.filterForOther(submissionRepository.findByArchived(false, pageable));
             } else {
                 if (status.equalsIgnoreCase("READY_TO_IMPORT")) {
-                    submissions = SubmissionsUtil.filterForReadyToImport(submissionRepository.findByOverallStatusAndArchived(Status.SUBMITTED.name(), false));
+                    submissions = submissionRepository.findByOverallStatusAndArchivedAndPublicationIdIsNotNull(Status.SUBMITTED.name(), false, pageable);
                 } else {
-                    submissions = submissionRepository.findByOverallStatusAndArchived(status, false);
+                    submissions = submissionRepository.findByOverallStatusAndArchived(status, false, pageable);
                 }
             }
         }
 
-        log.info("Found {} submissions.", submissions.size());
+        log.info("Found {} submissions.", submissions.getTotalElements());
         return submissions;
     }
 

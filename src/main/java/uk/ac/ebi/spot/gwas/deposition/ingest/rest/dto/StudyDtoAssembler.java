@@ -3,6 +3,8 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
@@ -19,7 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class StudyDtoAssembler {
+public class StudyDtoAssembler implements ResourceAssembler<Study, Resource<StudyDto>> {
+
 
     private static final Logger log = LoggerFactory.getLogger(StudyDtoAssembler.class);
 
@@ -34,6 +37,63 @@ public class StudyDtoAssembler {
 
     @Autowired
     EfoTraitRepository efoTraitRepository;
+
+    @Override
+    public Resource<StudyDto> toResource(Study study) {
+
+        log.info("Study Accession Id {}",study.getAccession());
+        StudyDto studyDto = new StudyDto(study.getStudyTag(),
+                study.getId(),
+                study.getAccession(),
+                study.getGenotypingTechnology(),
+                study.getArrayManufacturer(),
+                study.getArrayInformation(),
+                study.getImputation(),
+                study.getVariantCount(),
+                study.getSampleDescription(),
+                study.getStatisticalModel(),
+                study.getStudyDescription(),
+                study.getTrait(),
+                study.getEfoTrait(),
+                study.getBackgroundTrait(),
+                study.getBackgroundEfoTrait(),
+                study.getSummaryStatisticsFile(),
+                study.getRawFilePath(),
+                study.getChecksum(),
+                study.getSummaryStatisticsAssembly(),
+                study.getReadmeFile(),
+                study.getCohort(),
+                study.getCohortId(),
+                null,
+                null,
+                null,
+                study.isAgreedToCc0(),
+                Optional.ofNullable(study.getDiseaseTrait()).map(diseaseTraitRepository::findById).filter(Optional::isPresent).map(Optional::get).map(diseaseTraitAssemblyService::assembleDTO).orElse(null) ,
+                study.getEfoTraits() != null ? study.getEfoTraits().stream().map(efoTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(efoTraitAssemblyService::assembleDTO)
+                        .collect(Collectors.toList()) : null,
+                study.getBackgroundEfoTraits() != null ? study.getBackgroundEfoTraits().stream().map(efoTraitRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(efoTraitAssemblyService::assembleDTO)
+                        .collect(Collectors.toList()) : null,
+                study.getInitialSampleDescription(),
+                study.getReplicateSampleDescription(),
+                study.getSumstatsFlag(),
+                study.getPooledFlag(),
+                study.getGxeFlag(),
+                study.getSubmissionId(),
+                study.getImputationPanel(),
+                study.getImputationSoftware(),
+                study.getAdjustedCovariates(),
+                study.getEffect_allele_frequency_lower_limit(),
+                study.getSex(),
+                study.getCoordinateSystem());
+
+        return new Resource<>(studyDto);
+    }
 
     public  StudyDto assemble(Study study) {
 

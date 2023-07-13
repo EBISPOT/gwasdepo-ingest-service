@@ -3,6 +3,7 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.constants.SubmissionProvenanceType;
 import uk.ac.ebi.spot.gwas.deposition.domain.*;
@@ -51,7 +52,7 @@ public class SubmissionAssemblyServiceImpl implements SubmissionAssemblyService 
     StudyDtoAssembler studyDtoAssembler;
 
     @Override
-    public List<SubmissionEnvelopeDto> assembleEnvelopes(List<Submission> submissions) {
+    public List<SubmissionEnvelopeDto> assembleEnvelopes(Page<Submission> submissions) {
         List<String> pubIds = new ArrayList<>();
         List<String> bodyOfWorkIds = new ArrayList<>();
         Map<String, User> userMap = new HashMap<>();

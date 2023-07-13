@@ -34,6 +34,16 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
     private SubmissionRepository submissionRepository;
 
     @Override
+    public List<BodyOfWork> getByBowIdInAndArchived(List<String> bodyOfWorkIds, boolean archived) {
+        return bodyOfWorkRepository.findByBowIdInAndArchived(bodyOfWorkIds, archived);
+    }
+
+    @Override
+    public Optional<BodyOfWork> getByBowIdAndArchived(String bodyOfWorkId, boolean archived) {
+        return bodyOfWorkRepository.findByBowIdAndArchived(bodyOfWorkId, archived);
+    }
+
+    @Override
     public BodyOfWork retrieveBodyOfWork(String bodyOfWorkId) {
         log.info("Retrieving body of work: {}", bodyOfWorkId);
         Optional<BodyOfWork> optionalBodyOfWork = bodyOfWorkRepository.findByBowIdAndArchived(bodyOfWorkId, false);
@@ -105,5 +115,16 @@ public class BodyOfWorkServiceImpl implements BodyOfWorkService {
         List<BodyOfWork> bodyOfWorks = bodyOfWorkRepository.findByPmidsContainsAndArchived(pmid, false);
         log.info("Found {} body of works.", bodyOfWorks.size());
         return bodyOfWorks.size() != 0;
+    }
+
+
+    @Override
+    public BodyOfWork getBodyOfWorkBySubmission(Submission submission){
+        Optional<BodyOfWork> bodyOfWorkOptional = this.getByBowIdAndArchived(submission.getBodyOfWorks().get(0), false);
+        if (!bodyOfWorkOptional.isPresent()) {
+            log.error("Unable to find body of work: {}", submission.getBodyOfWorks());
+            throw new EntityNotFoundException("Unable to find body of work: " + submission.getBodyOfWorks().get(0));
+        }
+        return bodyOfWorkOptional.get();
     }
 }
