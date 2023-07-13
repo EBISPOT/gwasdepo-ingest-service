@@ -9,13 +9,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
-
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Publication;
@@ -24,11 +21,7 @@ import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.SubmissionAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
-
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SubmissionService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = GeneralCommon.API_V1 + IngestServiceConstants.API_SUBMISSIONS)

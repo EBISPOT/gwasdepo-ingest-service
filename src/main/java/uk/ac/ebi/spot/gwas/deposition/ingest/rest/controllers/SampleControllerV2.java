@@ -17,7 +17,6 @@ import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.SampleAssemblerV2;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.SampleService;
-import uk.ac.ebi.spot.gwas.deposition.ingest.service.StudyService;
 
 @Slf4j
 @RestController

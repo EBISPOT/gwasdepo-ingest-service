@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.spot.gwas.deposition.constants.GeneralCommon;
 import uk.ac.ebi.spot.gwas.deposition.domain.Association;
 import uk.ac.ebi.spot.gwas.deposition.dto.AssociationDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.constants.IngestServiceConstants;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto.AssociationDtoAssembler;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.AssociationService;

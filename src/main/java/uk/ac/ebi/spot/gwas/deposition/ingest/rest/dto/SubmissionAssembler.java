@@ -3,7 +3,6 @@ package uk.ac.ebi.spot.gwas.deposition.ingest.rest.dto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -15,9 +14,9 @@ import uk.ac.ebi.spot.gwas.deposition.dto.SampleDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.StudyDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.MetadataDto;
 import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionDto;
-import uk.ac.ebi.spot.gwas.deposition.dto.ingest.SubmissionEnvelopeDto;
 import uk.ac.ebi.spot.gwas.deposition.ingest.config.IngestServiceConfig;
-import uk.ac.ebi.spot.gwas.deposition.ingest.repository.*;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.NoteRepository;
+import uk.ac.ebi.spot.gwas.deposition.ingest.repository.UserRepository;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.AssociationController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SamplesController;
 import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.StudiesController;
@@ -25,7 +24,9 @@ import uk.ac.ebi.spot.gwas.deposition.ingest.rest.controllers.SubmissionsControl
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.BodyOfWorkService;
 import uk.ac.ebi.spot.gwas.deposition.ingest.service.PublicationService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -54,57 +55,7 @@ public class SubmissionAssembler implements ResourceAssembler<Submission, Resour
     @Autowired
     StudyDtoAssembler studyDtoAssembler;
 
-    public List<SubmissionEnvelopeDto> assembleEnvelopes(Page<Submission> submissions) {
-        List<String> pubIds = new ArrayList<>();
-        List<String> bodyOfWorkIds = new ArrayList<>();
-        Map<String, User> userMap = new HashMap<>();
-        for (Submission submission : submissions) {
-            if (submission.getProvenanceType().equalsIgnoreCase(SubmissionProvenanceType.PUBLICATION.name())) {
-                pubIds.add(submission.getPublicationId());
-            } else {
-                bodyOfWorkIds.addAll(submission.getBodyOfWorks());
-                if (submission.getPublicationId() != null) {
-                    pubIds.add(submission.getPublicationId());
-                }
-            }
-            userMap.put(submission.getCreated().getUserId(), null);
-        }
 
-        List<Publication> publications = publicationService.getByIdIn(pubIds);
-        Map<String, Publication> publicationMap = new HashMap<>();
-        for (Publication publication : publications) {
-            publicationMap.put(publication.getId(), publication);
-        }
-        List<BodyOfWork> bodyOfWorks = bodyOfWorkService.getByBowIdInAndArchived(bodyOfWorkIds, false);
-        Map<String, BodyOfWork> bodyOfWorksMap = new HashMap<>();
-        for (BodyOfWork bodyOfWork : bodyOfWorks) {
-            bodyOfWorksMap.put(bodyOfWork.getBowId(), bodyOfWork);
-        }
-        List<String> userIds = new ArrayList<>();
-        for (String id : userMap.keySet()) {
-            userIds.add(id);
-        }
-        List<User> users = userRepository.findByIdIn(userIds);
-        for (User user : users) {
-            userMap.put(user.getId(), user);
-        }
-
-        List<SubmissionEnvelopeDto> result = new ArrayList<>();
-        for (Submission submission : submissions) {
-            result.add(new SubmissionEnvelopeDto(
-                    submission.getId(),
-                    submission.getPublicationId() != null ? PublicationDtoAssembler.assemble(publicationMap.get(submission.getPublicationId())) : null,
-                    submission.getBodyOfWorks() != null ? BodyOfWorkDtoAssembler.assemble(bodyOfWorksMap.get(submission.getBodyOfWorks().get(0))) : null,
-                    submission.getProvenanceType(),
-                    submission.getOverallStatus(),
-                    submission.getGlobusFolderId(),
-                    submission.getGlobusOriginId(),
-                    submission.getDateSubmitted(),
-                    ProvenanceDtoAssembler.assemble(submission.getCreated(), userMap.get(submission.getCreated().getUserId()))
-            ));
-        }
-        return result;
-    }
 
     @Override
     public Resource<SubmissionDto> toResource(Submission submission) {
