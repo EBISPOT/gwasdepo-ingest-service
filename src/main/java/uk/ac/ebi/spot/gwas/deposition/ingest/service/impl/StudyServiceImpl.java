@@ -1,6 +1,8 @@
 package uk.ac.ebi.spot.gwas.deposition.ingest.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.spot.gwas.deposition.domain.Study;
 import uk.ac.ebi.spot.gwas.deposition.ingest.repository.StudyRepository;
@@ -26,5 +28,11 @@ public class StudyServiceImpl implements StudyService {
         }
         return presentStudy;
     }
+
+    @Override
+    public Page<Study> getStudiesBySubmission(String submissionId, Pageable pageable) {
+        return studyRepository.findBySubmissionId(submissionId, pageable);
+    }
+
 }
 
