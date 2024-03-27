@@ -90,7 +90,8 @@ public class StudyDtoAssembler implements ResourceAssembler<Study, Resource<Stud
                 study.getAdjustedCovariates(),
                 study.getEffect_allele_frequency_lower_limit(),
                 study.getSex(),
-                study.getCoordinateSystem());
+                study.getCoordinateSystem(),
+                study.getAnalysisSoftware());
 
         return new Resource<>(studyDto);
     }
@@ -155,7 +156,8 @@ public class StudyDtoAssembler implements ResourceAssembler<Study, Resource<Stud
                 study.getAdjustedCovariates(),
                 study.getEffect_allele_frequency_lower_limit(),
                 study.getSex(),
-                study.getCoordinateSystem());
+                study.getCoordinateSystem(),
+                study.getAnalysisSoftware());
     }
 
     public static StudyDto assemble(Study study, List<AssociationDto> associationDtos,
@@ -200,7 +202,8 @@ public class StudyDtoAssembler implements ResourceAssembler<Study, Resource<Stud
                 study.getAdjustedCovariates(),
                 study.getEffect_allele_frequency_lower_limit(),
                 study.getSex(),
-                study.getCoordinateSystem());
+                study.getCoordinateSystem(),
+                study.getAnalysisSoftware());
     }
 
     public static Study disassemble(StudyDto studyDto) {
