@@ -1,5 +1,5 @@
 # Import base image
-FROM eclipse-temurin:8-jre-alpine
+FROM eclipse-temurin:8-jre
 
 # Create log file directory and set permission
 RUN addgroup -S gwas-ingest-service && adduser -S -G gwas-ingest-service -h /home/gwas-ingest-service gwas-ingest-service
