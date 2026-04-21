@@ -1,5 +1,5 @@
 # Import base image
-FROM openjdk:8u212-jre
+FROM eclipse-temurin:8-jre-focal
 
 # Create log file directory and set permission
 RUN groupadd -r gwas-ingest-service && useradd -r --create-home -g gwas-ingest-service gwas-ingest-service

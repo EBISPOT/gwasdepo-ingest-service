@@ -13,8 +13,8 @@ image:
   env:
     envName: "sandbox"
     logFileName: "ingest-service"
-    xms: "-Xms1024m"
-    xmx: "-Xms1024m"
+    xms: ""
+    xmx: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     dbUser: ""
     secretsName: ""
     secretsKey: ""
